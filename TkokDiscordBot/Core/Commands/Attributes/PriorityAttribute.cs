@@ -1,4 +1,5 @@
 ﻿using System;
+using TkokDiscordBot.Enums;
 
 namespace TkokDiscordBot.Core.Commands.Attributes
 {

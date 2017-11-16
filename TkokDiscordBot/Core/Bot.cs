@@ -6,8 +6,10 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Castle.Core.Internal;
 using DSharpPlus;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
+using DSharpPlus.Net.WebSocket;
 using TkokDiscordBot.Configuration;
 using TkokDiscordBot.Core.Commands.Abstractions;
 using TkokDiscordBot.Core.Commands.Attributes;
@@ -15,7 +17,7 @@ using TkokDiscordBot.EntGaming;
 
 namespace TkokDiscordBot.Core
 {
-    internal sealed class Bot : DiscordClient
+    internal class Bot
     {
         public const string DefaultMainChannelTopic = "General and Main-discussions - [English]";
 
@@ -24,14 +26,10 @@ namespace TkokDiscordBot.Core
         private readonly ISettings _settings;
         private DiscordChannel _mainChannel;
 
+        public DiscordClient Client { get; set; }
+        public CommandsNextModule Commands { get; set; }
+
         public Bot(IEnumerable<IBotCommand> commands, ISettings settings, EntClient entClient)
-            : base(new DiscordConfiguration
-            {
-                Token = settings.DiscordToken,
-                TokenType = TokenType.Bot,
-                LogLevel = LogLevel.Info,
-                UseInternalLogHandler = true
-            })
         {
             _botCommands = commands.OrderBy(c => (short?)c.GetType().GetAttribute<PriorityAttribute>()?.Priority ?? 0)
                 .ToList();
@@ -39,17 +37,36 @@ namespace TkokDiscordBot.Core
             _entClient = entClient;
             _entClient.GameInfoChanged += EntClientOnGameInfoChanged;
 
-            DebugLogger.LogMessage(LogLevel.Info, nameof(Bot), "Initializing events", DateTime.Now);
-
-            MessageCreated += OnMessageCreated;
-            GuildMemberAdded += OnGuildMemberAdded;
-            GuildAvailable += OnGuildAvailable;
-            ClientErrored += OnClientErrored;
-
-            DebugLogger.LogMessage(LogLevel.Info, nameof(Bot), "Initializing Ready", DateTime.Now);
-
-            Ready += OnReady;
+            InitializeDiscordClient();
         }
+
+        private void InitializeDiscordClient()
+        {
+            Client = new DiscordClient(new DiscordConfiguration
+            {
+                Token = _settings.DiscordToken,
+                TokenType = TokenType.Bot,
+                LogLevel = LogLevel.Info,
+                UseInternalLogHandler = true
+            });
+            Client.SetWebSocketClient<WebSocket4NetClient>();
+
+            Client.DebugLogger.LogMessage(LogLevel.Info, nameof(Bot), "Initializing events", DateTime.Now);
+
+            Client.MessageCreated += OnMessageCreated;
+            Client.GuildMemberAdded += OnGuildMemberAdded;
+            Client.GuildAvailable += OnGuildAvailable;
+            Client.ClientErrored += OnClientErrored;
+
+            var commandsNextConfig = new CommandsNextConfiguration();
+            Commands = Client.UseCommandsNext(commandsNextConfig);
+
+            Client.DebugLogger.LogMessage(LogLevel.Info, nameof(Bot), "Initializing Ready", DateTime.Now);
+
+            Client.Ready += OnReady;
+        }
+
+        #region Discord Client Event Handlers
 
         private async void EntClientOnGameInfoChanged(object sender, PropertyChangedEventArgs eventArgs)
         {
@@ -90,15 +107,15 @@ namespace TkokDiscordBot.Core
         private async Task OnReady(ReadyEventArgs e)
         {
             await Task.Yield();
-            _mainChannel = await GetChannelAsync((ulong)_settings.MainChannelId);
-            DebugLogger.LogMessage(LogLevel.Info, nameof(Bot), "Ready! Setting status message..", DateTime.Now);
+            _mainChannel = await Client.GetChannelAsync((ulong)_settings.MainChannelId);
+            Client.DebugLogger.LogMessage(LogLevel.Info, nameof(Bot), "Ready! Setting status message..", DateTime.Now);
 
-            await UpdateStatusAsync(new DiscordGame("Creating SkyNet"));
+            await Client.UpdateStatusAsync(new DiscordGame("Creating SkyNet"));
         }
 
         private async Task OnGuildMemberAdded(GuildMemberAddEventArgs e)
         {
-            var lfgChannel = await GetChannelAsync(220901817305923584);
+            var lfgChannel = await Client.GetChannelAsync(220901817305923584);
             var welcomeText = $"{e.Member.Mention} :smiley: Welcome to the **Official TKoK** server! " +
                               $"I\'m TKoK Bot <:bot:379752914215763994> and if you want to check out my features, " +
                               $"type `!help` or `!commands`. Visit {lfgChannel.Mention} channel to find a teammates.";
@@ -128,15 +145,17 @@ namespace TkokDiscordBot.Core
 
             foreach (var command in _botCommands)
             {
-                var handled = await command.Handle(this, e);
+                var handled = await command.Handle(Client, e);
                 if (handled)
                 {
-                    DebugLogger.LogMessage(LogLevel.Info, nameof(Bot),
+                    Client.DebugLogger.LogMessage(LogLevel.Info, nameof(Bot),
                         $"Command {e.Author.Username}:'{e.Message.Content}' was handled by {command.GetType().Name}",
                         DateTime.Now);
                     break; //ensure that we don't handle the same message with multiple commands
                 }
             }
         }
+
+        #endregion
     }
 }
