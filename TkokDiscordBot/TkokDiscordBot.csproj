@@ -83,16 +83,17 @@
   <ItemGroup>
     <Compile Include="Configuration\Settings.cs" />
     <Compile Include="Core\Bot.cs" />
+    <Compile Include="Core\Commands\Abstractions\ICommandNext.cs" />
     <Compile Include="Core\Commands\AdministrationCommand.cs" />
     <Compile Include="Enums\CommandPriority.cs" />
     <Compile Include="Core\Commands\Attributes\PriorityAttribute.cs" />
     <Compile Include="Core\Commands\AutoTrackCommand.cs" />
     <Compile Include="Core\Commands\Dto\CommandInfo.cs" />
     <Compile Include="Core\Commands\FullTextSearchItemsCommand.cs" />
-    <Compile Include="Core\Commands\GameHostingCommand.cs" />
+    <Compile Include="Core\CommandsNext\GameHostingCommand.cs" />
     <Compile Include="Core\Commands\GetItemByNameCommand.cs" />
-    <Compile Include="Core\Commands\TrackCommand.cs" />
-    <Compile Include="Core\Commands\PingCommand.cs" />
+    <Compile Include="Core\CommandsNext\TrackCommand.cs" />
+    <Compile Include="Core\CommandsNext\PingCommand.cs" />
     <Compile Include="Core\Commands\Abstractions\IBotCommand.cs" />
     <Compile Include="Data\Abstractions\IItemsLoader.cs" />
     <Compile Include="Data\Abstractions\IItemsRepository.cs" />
