@@ -27,6 +27,7 @@ namespace TkokDiscordBot.Core
         private readonly List<IBotCommand> _botCommands;
         private readonly EntClient _entClient;
         private readonly IItemsRepository _itemsRepository;
+        private readonly IItemsStore _itemsStore;
         private readonly IEnumerable<ICommandNext> _commandsNext;
         private readonly ISettings _settings;
         private DiscordChannel _mainChannel;
@@ -39,7 +40,8 @@ namespace TkokDiscordBot.Core
             IEnumerable<ICommandNext> commandsNext,
             ISettings settings,
             EntClient entClient,
-            IItemsRepository itemsRepository)
+            IItemsRepository itemsRepository,
+            IItemsStore itemsStore)
         {
             _botCommands = commands.OrderBy(c => (short?)c.GetType().GetAttribute<PriorityAttribute>()?.Priority ?? 0)
                 .ToList();
@@ -47,6 +49,7 @@ namespace TkokDiscordBot.Core
             _settings = settings;
             _entClient = entClient;
             _itemsRepository = itemsRepository;
+            _itemsStore = itemsStore;
             _entClient.GameInfoChanged += EntClientOnGameInfoChanged;
 
             InitializeDiscordClient();
@@ -76,6 +79,7 @@ namespace TkokDiscordBot.Core
             dependencyCollectionBuilder.AddInstance(_settings);
             dependencyCollectionBuilder.AddInstance(_entClient);
             dependencyCollectionBuilder.AddInstance(_itemsRepository);
+            dependencyCollectionBuilder.AddInstance(_itemsStore);
 
             var commandsNextConfig = new CommandsNextConfiguration
             {
@@ -87,6 +91,7 @@ namespace TkokDiscordBot.Core
             Commands.RegisterCommands<PingCommand>();
             Commands.RegisterCommands<TrackCommand>();
             Commands.RegisterCommands<GameHostingCommand>();
+            Commands.RegisterCommands<AdministrationCommands>();
 
             Client.DebugLogger.LogMessage(LogLevel.Info, nameof(Bot), "Initializing Ready", DateTime.Now);
 
