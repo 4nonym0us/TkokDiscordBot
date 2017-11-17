@@ -12,7 +12,6 @@ using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Net.WebSocket;
 using TkokDiscordBot.Configuration;
-using TkokDiscordBot.Core.Commands;
 using TkokDiscordBot.Core.Commands.Abstractions;
 using TkokDiscordBot.Core.Commands.Attributes;
 using TkokDiscordBot.Core.CommandsNext;
@@ -23,14 +22,13 @@ namespace TkokDiscordBot.Core
 {
     internal class Bot
     {
-        public const string DefaultMainChannelTopic = "General and Main-discussions - [English]";
-
         private readonly List<IBotCommand> _botCommands;
         private readonly IEnumerable<ICommandNext> _commandsNext;
         private readonly EntClient _entClient;
         private readonly IItemsRepository _itemsRepository;
         private readonly IItemsStore _itemsStore;
         private readonly ISettings _settings;
+        private string _defaultMainChannelTopic = "General and Main-discussions - [English]";
         private DiscordChannel _mainChannel;
 
         public Bot(
@@ -143,7 +141,7 @@ namespace TkokDiscordBot.Core
             if (lobbyInfo != null)
                 await _mainChannel.ModifyAsync("main", null, "Currently hosting: " + lobbyInfo);
             else
-                await _mainChannel.ModifyAsync("main", null, DefaultMainChannelTopic);
+                await _mainChannel.ModifyAsync("main", null, _defaultMainChannelTopic);
         }
 
         private Task OnClientErrored(ClientErrorEventArgs e)
@@ -164,6 +162,7 @@ namespace TkokDiscordBot.Core
         {
             await Task.Yield();
             _mainChannel = await Client.GetChannelAsync((ulong) _settings.MainChannelId);
+            _defaultMainChannelTopic = _mainChannel.Topic;
             Client.DebugLogger.LogMessage(LogLevel.Info, nameof(Bot), "Ready! Setting status message..", DateTime.Now);
 
             await Client.UpdateStatusAsync(new DiscordGame("Creating SkyNet"));
