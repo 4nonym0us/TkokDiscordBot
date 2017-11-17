@@ -51,7 +51,7 @@ namespace TkokDiscordBot.Core
             InitializeCommandsNext();
             InitializeInteractivity();
 
-            Client.DebugLogger.LogMessage(LogLevel.Info, nameof(Bot), "Initializing Ready", DateTime.Now);
+            Client.DebugLogger.LogMessage(LogLevel.Info, nameof(Bot), "Initialization sequence completed.", DateTime.Now);
         }
 
         public DiscordClient Client { get; set; }
@@ -62,8 +62,6 @@ namespace TkokDiscordBot.Core
 
         private void InitializeDiscordClient()
         {
-            Client.DebugLogger.LogMessage(LogLevel.Debug, nameof(InitializeDiscordClient), "Starting...", DateTime.Now);
-
             Client = new DiscordClient(new DiscordConfiguration
             {
                 Token = _settings.DiscordToken,
@@ -81,13 +79,11 @@ namespace TkokDiscordBot.Core
 
             Client.Ready += OnReady;
 
-            Client.DebugLogger.LogMessage(LogLevel.Debug, nameof(InitializeDiscordClient), "Done.", DateTime.Now);
+            Client.DebugLogger.LogMessage(LogLevel.Debug, nameof(InitializeDiscordClient), "Completed.", DateTime.Now);
         }
 
         private void InitializeCommandsNext()
         {
-            Client.DebugLogger.LogMessage(LogLevel.Debug, nameof(InitializeCommandsNext), "Starting...", DateTime.Now);
-
             //TODO: find a non-retarded way to make Autofac handle CommandsNext DI
             var dependencyCollectionBuilder = new DependencyCollectionBuilder();
             dependencyCollectionBuilder.AddInstance(_settings);
@@ -107,13 +103,11 @@ namespace TkokDiscordBot.Core
             Commands.RegisterCommands<GameHostingCommand>();
             Commands.RegisterCommands<AdministrationCommands>();
 
-            Client.DebugLogger.LogMessage(LogLevel.Debug, nameof(InitializeCommandsNext), "Done.", DateTime.Now);
+            Client.DebugLogger.LogMessage(LogLevel.Debug, nameof(InitializeCommandsNext), "Completed.", DateTime.Now);
         }
 
         private void InitializeInteractivity()
         {
-            Client.DebugLogger.LogMessage(LogLevel.Debug, nameof(InitializeInteractivity), "Starting...", DateTime.Now);
-
             Interactivity = Client.UseInteractivity(new InteractivityConfiguration
             {
                 PaginationBehaviour =
@@ -122,7 +116,7 @@ namespace TkokDiscordBot.Core
                 Timeout = TimeSpan.FromMinutes(2) // default timeout for other actions to 2 minutes
             });
 
-            Client.DebugLogger.LogMessage(LogLevel.Debug, nameof(InitializeInteractivity), "Done.", DateTime.Now);
+            Client.DebugLogger.LogMessage(LogLevel.Debug, nameof(InitializeInteractivity), "Completed.", DateTime.Now);
         }
 
         #endregion
