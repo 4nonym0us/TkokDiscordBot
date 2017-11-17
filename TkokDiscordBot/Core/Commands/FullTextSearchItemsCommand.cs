@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -9,7 +8,6 @@ using TkokDiscordBot.Core.Commands.Abstractions;
 using TkokDiscordBot.Core.Commands.Attributes;
 using TkokDiscordBot.Core.Commands.Dto;
 using TkokDiscordBot.Data.Abstractions;
-using TkokDiscordBot.Entities;
 using TkokDiscordBot.Enums;
 using TkokDiscordBot.Extensions;
 
