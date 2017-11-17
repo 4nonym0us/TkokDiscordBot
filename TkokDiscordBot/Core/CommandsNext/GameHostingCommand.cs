@@ -17,7 +17,7 @@ namespace TkokDiscordBot.Core.CommandsNext
             _entClient = entClient;
         }
 
-        [Command("hhost")]
+        [Command("host")]
         public async Task Host(CommandContext context, params string[] args)
         {
             if (args.Length == 0)
