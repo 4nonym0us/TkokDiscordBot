@@ -83,6 +83,7 @@
   <ItemGroup>
     <Compile Include="Configuration\Settings.cs" />
     <Compile Include="Core\Bot.cs" />
+    <Compile Include="Core\CommandsNext\PollCommand.cs" />
     <Compile Include="Core\Commands\Abstractions\ICommandNext.cs" />
     <Compile Include="Core\CommandsNext\AdministrationCommands.cs" />
     <Compile Include="Dependency\CommandsModule.cs" />
@@ -91,7 +92,7 @@
     <Compile Include="Core\Commands\Attributes\PriorityAttribute.cs" />
     <Compile Include="Core\Commands\AutoTrackCommand.cs" />
     <Compile Include="Core\Commands\Dto\CommandInfo.cs" />
-    <Compile Include="Core\Commands\FullTextSearchItemsCommand.cs" />
+    <Compile Include="Core\CommandsNext\FullTextSearchItemsCommand.cs" />
     <Compile Include="Core\CommandsNext\GameHostingCommand.cs" />
     <Compile Include="Core\Commands\GetItemByNameCommand.cs" />
     <Compile Include="Core\CommandsNext\TrackCommand.cs" />
@@ -115,6 +116,7 @@
     <Compile Include="Extensions\NullableExtensions.cs" />
     <Compile Include="Extensions\SettingsExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Formatters\ItemFormatter.cs" />
     <Compile Include="Helpers\TkokClassHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -2,15 +2,8 @@
 using System.Reflection;
 using System.Threading.Tasks;
 using Autofac;
-using Config.Net;
 using TkokDiscordBot.Configuration;
 using TkokDiscordBot.Core;
-using TkokDiscordBot.Core.Commands.Abstractions;
-using TkokDiscordBot.Data;
-using TkokDiscordBot.Data.Abstractions;
-using TkokDiscordBot.Dependency;
-using TkokDiscordBot.EntGaming;
-using TkokDiscordBot.Extensions;
 
 namespace TkokDiscordBot
 {
