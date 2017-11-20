@@ -14,24 +14,24 @@ namespace TkokDiscordBot.Helpers
         {
             EquipableItemsDict = new Dictionary<TkokClass, string[]>
             {
-                {TkokClass.Arcanist, new[] {"Cloth", "Staff, Book", "Wand", "Orb"}},
-                {TkokClass.Hydromancer, new[] {"Cloth", "Staff, Book", "Wand", "Orb"}},
-                {TkokClass.Pyromancer, new[] {"Cloth", "Staff, Book", "Wand", "Orb"}},
-                {TkokClass.Aeromancer, new[] {"Cloth", "Staff, Book", "Wand", "Orb"}},
-                {TkokClass.Cleric, new[] {"Cloth", "Staff, Book", "Wand", "Orb"}},
-                {TkokClass.Warrior, new[] {"Chain","Sword","Axe","Mace, Shield","Dual Dagger","Dual Axe"}},
-                {TkokClass.ChaoticKnight, new[] {"Chain","Sword","Axe, Shield","Dual Axe"}},
-                {TkokClass.Shadowblade, new[] {"Leather","Dagger","Sword, Dual Dagger"}},
-                {TkokClass.Medicaster, new[] {"Leather or Cloth","Staff","Axe","Mace, Idol","Book"}},
-                {TkokClass.Venomancer, new[] {"Leather","Dagger, Dual Dagger","Wand","Orb"}},
-                {TkokClass.PhantomStalker, new[] {"Leather","Dagger, Dual Dagger"}},
-                {TkokClass.Chronowarper, new[] {"Cloth or Chain","Sword","Axe","Mace, Dual Dagger","Dual Axe","Wand","Orb"}},
-                {TkokClass.Barbarian, new[] {"Chain or Leather","Axe, Dual Axe"}},
-                {TkokClass.Paladin, new[] {"Chain","Mace, Book"}},
-                {TkokClass.Ranger, new[] {"Leather","Bow, Quiver","Dual Dagger"}},
-                {TkokClass.Druid, new[] {"Leather","Staff, Idol"}},
-                {TkokClass.Earthquaker, new[] {"Chain","Axe, Dual Axe","Idol"}},
-                {TkokClass.ShadowShaman, new[] {"Cloth","Staff, Idol","Wand","Orb"}}
+                {TkokClass.Arcanist, new[] {"Cloth", "Staff", "Book", "Wand", "Orb"}},
+                {TkokClass.Hydromancer, new[] {"Cloth", "Staff", "Book", "Wand", "Orb"}},
+                {TkokClass.Pyromancer, new[] {"Cloth", "Staff", "Book", "Wand", "Orb"}},
+                {TkokClass.Aeromancer, new[] {"Cloth", "Staff", "Book", "Wand", "Orb"}},
+                {TkokClass.Cleric, new[] {"Cloth", "Staff", "Book", "Wand", "Orb"}},
+                {TkokClass.Warrior, new[] {"Chain", "Sword", "Axe", "Mace", "Shield", "Dual Dagger", "Dual Axe"}},
+                {TkokClass.ChaoticKnight, new[] {"Chain", "Sword", "Axe", "Shield", "Dual Axe"}},
+                {TkokClass.Shadowblade, new[] {"Leather", "Dagger", "Sword", "Dual Dagger"}},
+                {TkokClass.Medicaster, new[] {"Leather", "Cloth", "Staff", "Axe", "Mace", "Idol", "Book"}},
+                {TkokClass.Venomancer, new[] {"Leather", "Dagger", "Dual Dagger", "Wand", "Orb"}},
+                {TkokClass.PhantomStalker, new[] {"Leather", "Dagger", "Dual Dagger"}},
+                {TkokClass.Chronowarper,new[] {"Cloth", "Chain", "Sword", "Axe", "Mace", "Dual Dagger", "Dual Axe", "Wand", "Orb"}},
+                {TkokClass.Barbarian, new[] {"Chain", "Leather", "Axe", "Dual Axe"}},
+                {TkokClass.Paladin, new[] {"Chain", "Mace", "Book"}},
+                {TkokClass.Ranger, new[] {"Leather", "Bow", "Quiver", "Dual Dagger"}},
+                {TkokClass.Druid, new[] {"Leather", "Staff", "Idol"}},
+                {TkokClass.Earthquaker, new[] {"Chain", "Axe", "Dual Axe", "Idol"}},
+                {TkokClass.ShadowShaman, new[] {"Cloth", "Staff", "Idol", "Wand", "Orb"}}
             };
         }
 
