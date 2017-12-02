@@ -26,7 +26,7 @@ namespace TkokDiscordBot.Core.CommandsNext
             }
 
             var owner = args[0];
-            var ownerValidator = new Regex(@"^([0-9a-zA-Z-_\.]{3,32})$");
+            var ownerValidator = new Regex(@"^([0-9a-zA-Z-_\.\[\]]{3,32})$");
             if (!ownerValidator.IsMatch(owner))
             {
                 return;
