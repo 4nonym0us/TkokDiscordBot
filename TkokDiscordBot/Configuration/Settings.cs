@@ -8,28 +8,25 @@ namespace TkokDiscordBot.Configuration
         /// Discord token
         /// </summary>
         string DiscordToken { get; set; }
-
-        /// <summary>
-        /// Username on Entgaming.com
-        /// </summary>
-        string EntUsername { get; set; }
-
-        /// <summary>
-        /// Password on Entgaming.com
-        /// </summary>
-        string EntPassword { get; set; }
-
-        [Option(DefaultValue = ":824bv")]
-        string EntMap { get; set; }
-
+        
         /// <summary>
         /// User Ids, separate multiple id's with comma
         /// </summary>
         string DiscordBotAdmins { get; set; }
 
         /// <summary>
-        /// User Ids, separate multiple id's with comma
+        /// Id of #main channel
         /// </summary>
-        long MainChannelId { get; set; }
+        ulong MainChannelId { get; set; }
+        
+        /// <summary>
+        /// Id of #media channel
+        /// </summary>
+        ulong MediaChannelId { get; set; }
+        
+        /// <summary>
+        /// Id of #bot-commands channel
+        /// </summary>
+        ulong BotCommandsChannelId { get; set; }
     }
 }

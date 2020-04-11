@@ -4,7 +4,7 @@ namespace TkokDiscordBot.Extensions
 {
     public static class StringExtensions
     {
-        public static string ToSentenseCase(this string s)
+        public static string ToSentenceCase(this string s)
         {
             var lowerCase = s.ToLower();
             var r = new Regex(@"(^[a-z])|\.\s+(.)", RegexOptions.ExplicitCapture);

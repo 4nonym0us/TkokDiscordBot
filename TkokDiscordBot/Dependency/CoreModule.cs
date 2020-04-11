@@ -4,7 +4,6 @@ using TkokDiscordBot.Configuration;
 using TkokDiscordBot.Core;
 using TkokDiscordBot.Data;
 using TkokDiscordBot.Data.Abstractions;
-using TkokDiscordBot.EntGaming;
 
 namespace TkokDiscordBot.Dependency
 {
@@ -15,7 +14,6 @@ namespace TkokDiscordBot.Dependency
             builder.RegisterType<PasteBinItemsLoader>().As<IItemsLoader>().InstancePerDependency(); //PasteBinItemsLoader|LocalFileItemsLoader
             builder.RegisterType<ItemsStore>().As<IItemsStore>().SingleInstance();
             builder.RegisterType<ItemsRepository>().As<IItemsRepository>().InstancePerDependency();
-            builder.RegisterType<EntClient>().AsSelf().SingleInstance();
             builder.RegisterType<Bot>().AsSelf().SingleInstance();
 
             var settings = new ConfigurationBuilder<ISettings>()

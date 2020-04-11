@@ -53,10 +53,7 @@ namespace TkokDiscordBot.Core.CommandsNext
                 return;
             }
 
-            var debugInfo = $"EntMap: {_settings.EntMap}\r\n" +
-                            $"EntUsername: {_settings.EntUsername}\r\n" +
-                            $"EntPassword: {_settings.EntPassword}\r\n" +
-                            $"DiscordBotAdmins: {_settings.DiscordBotAdmins}";
+            var debugInfo = $"DiscordBotAdmins: {_settings.DiscordBotAdmins}";
             await context.RespondAsync($"```{debugInfo}```");
         }
 
