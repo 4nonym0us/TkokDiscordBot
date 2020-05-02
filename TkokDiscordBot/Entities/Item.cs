@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Castle.Core.Internal;
+using TkokDiscordBot.Helpers;
 
 namespace TkokDiscordBot.Entities
 {
@@ -33,7 +33,7 @@ namespace TkokDiscordBot.Entities
 
         public string Icon { get; set; }
 
-        public string IconUrl => !Icon.IsNullOrEmpty() ? "https://angelxice.ca/etc/tkok/icons/" + Icon : string.Empty;
+        public string IconUrl => !Icon.IsNullOrEmpty() ? "http://185.10.17.236/icons/" + Icon : string.Empty;
 
         public string ClassRestriction { get; set; }
 
@@ -43,10 +43,7 @@ namespace TkokDiscordBot.Entities
             set
             {
                 _reforgeLevel = value;
-                foreach (var key in Properties.Keys.ToList())
-                {
-                    Properties[key] = Math.Round(Properties[key] * (1 + value / 30d), 2);
-                }
+                ReforgingHelper.ReforgeProperties(this, value);
             }
         }
 
