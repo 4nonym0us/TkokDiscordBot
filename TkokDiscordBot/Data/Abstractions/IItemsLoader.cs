@@ -2,10 +2,9 @@
 using System.Threading.Tasks;
 using TkokDiscordBot.Entities;
 
-namespace TkokDiscordBot.Data.Abstractions
+namespace TkokDiscordBot.Data.Abstractions;
+
+public interface IItemsLoader
 {
-    public interface IItemsLoader
-    {
-        Task<IEnumerable<Item>> Load();
-    }
+    Task<IEnumerable<Item>> LoadAsync();
 }

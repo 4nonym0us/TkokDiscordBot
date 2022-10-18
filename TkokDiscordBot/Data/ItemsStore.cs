@@ -4,30 +4,30 @@ using System.Threading.Tasks;
 using TkokDiscordBot.Data.Abstractions;
 using TkokDiscordBot.Entities;
 
-namespace TkokDiscordBot.Data
+namespace TkokDiscordBot.Data;
+
+public class ItemsStore : IItemsStore
 {
-    public class ItemsStore : IItemsStore
+    private IReadOnlyCollection<Item> _items;
+    private readonly IItemsLoader _itemsLoader;
+
+    public ItemsStore(IItemsLoader itemsLoader)
     {
-        private IEnumerable<Item> _items;
-        private readonly IItemsLoader _itemsLoader;
+        _itemsLoader = itemsLoader;
+    }
 
-        public ItemsStore(IItemsLoader itemsLoader)
+    public async Task<IReadOnlyCollection<Item>> GetAllAsync()
+    {
+        if (_items == null || _items.Any())
         {
-            _itemsLoader = itemsLoader;
+            await ReloadItemsAsync();
         }
 
-        public async Task<IEnumerable<Item>> GetAllAsync()
-        {
-            if (_items == null || _items.Any())
-            {
-                await ReSyncItems();
-            }
-            return _items.OrderBy(i => i.Level).ThenBy(i => i.Name);
-        }
+        return _items;
+    }
 
-        public async Task ReSyncItems()
-        {
-            _items = await _itemsLoader.Load();
-        }
+    public async Task ReloadItemsAsync()
+    {
+        _items = (await _itemsLoader.LoadAsync()).OrderBy(i => i.Level).ThenBy(i => i.Name).ToList();
     }
 }

@@ -5,17 +5,16 @@ using System.Threading.Tasks;
 using TkokDiscordBot.Data.Abstractions;
 using TkokDiscordBot.Entities;
 
-namespace TkokDiscordBot.Data
-{
-    public class PasteBinItemsLoader : ItemLoaderBase
-    {
-        public override async Task<IEnumerable<Item>> Load()
-        {
-            using var client = new HttpClient();
-            var response = await client.GetStringAsync("https://pastebin.com/raw/93Q7pjQJ");
-            var fileLines = Regex.Split(response, "\r\n|\r|\n");
+namespace TkokDiscordBot.Data;
 
-            return ParseLines(fileLines);
-        }
+public class PasteBinItemsLoader : ItemLoaderBase
+{
+    public override async Task<IEnumerable<Item>> LoadAsync()
+    {
+        using var client = new HttpClient();
+        var response = await client.GetStringAsync("https://pastebin.com/raw/93Q7pjQJ");
+        var fileLines = Regex.Split(response, @"\r?\n");
+
+        return ParseLines(fileLines);
     }
 }
