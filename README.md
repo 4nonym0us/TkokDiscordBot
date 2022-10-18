@@ -2,9 +2,11 @@
 
 ## Demo
 
-![Demo 1: Querying a single item by name](https://github.com/4nonym0us/TkokDiscordBot/raw/master/assets/images/demo1.png)
+Live demo is available on [TKoK Discord Server](https://discord.gg/ES2dwYC).
 
-![Demo 2: Interactive item search](https://github.com/4nonym0us/TkokDiscordBot/raw/master/assets/images/demo2.gif)
+![Demo 1: Querying a single item by name](https://github.com/4nonym0us/TkokDiscordBot/raw/master/assets/images/demo1.gif)
+
+![Demo 2: Interactive item search](https://github.com/4nonym0us/TkokDiscordBot/raw/master/assets/images/demo2.png)
 
 ## Requirements
 
