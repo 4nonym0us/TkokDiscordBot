@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
@@ -25,6 +26,8 @@ public class DiscordPageGenerator
         " *Tip: Use* `!<item name> +15` *to get stats of lvl 15 reforged item.*",
     };
 
+    private static string[] ColumnNames { get; } = { "Name", "Type", "Slot", "Quality", "Lv", "Source" };
+
     public IReadOnlyCollection<Page> ToPages(IReadOnlyCollection<Item> items, string header = null)
     {
         var colWidthSettings = new int[6];
@@ -38,6 +41,11 @@ public class DiscordPageGenerator
             if (colWidthSettings[5] < item.NormalizedObtainableFrom.Length) { colWidthSettings[5] = item.NormalizedObtainableFrom.Length; }
         }
 
+        for (var i = 0; i < ColumnNames.Length; i++)
+        {
+            colWidthSettings[i] = Math.Max(colWidthSettings[i], ColumnNames[i].Length);
+        }
+
         return GeneratePagedOutput(items, colWidthSettings, header).ToList();
     }
 
@@ -49,30 +57,43 @@ public class DiscordPageGenerator
         var extraLength = "```".Length * 2;
         var headerLength = header?.Length ?? 0;
 
-        var tableHeader = new StringBuilder()
-            // 1st line
-            .Append("Name".PadRight(colWidthSettings[0])).Append(verticalLine)
-            .Append("Type".PadLeft(colWidthSettings[1])).Append(verticalLine)
-            .Append("Slot".PadLeft(colWidthSettings[2])).Append(verticalLine)
-            .Append("Quality".PadLeft(colWidthSettings[3])).Append(verticalLine)
-            .Append("Lv".PadLeft(colWidthSettings[4])).Append(verticalLine)
-            .Append("Source".PadLeft(colWidthSettings[5])).Append("\r\n")
-            // 2nd line
-            .Append(new string(horizontalLine, colWidthSettings[0])).Append(lineCrossing)
+        var tableHeaderBuilder = new StringBuilder();
+        // 1st line
+        for (var i = 0; i < ColumnNames.Length; i++)
+        {
+            var firstColumn = i == 0;
+            var lastColumn = i == ColumnNames.Length - 1;
+
+            tableHeaderBuilder.Append(firstColumn
+                ? ColumnNames[i].PadRight(colWidthSettings[i])
+                : ColumnNames[i].PadLeft(colWidthSettings[i]));
+
+            if (!lastColumn)
+            {
+                tableHeaderBuilder.Append(verticalLine);
+            }
+        }
+
+        tableHeaderBuilder.AppendLine();
+
+        // 2nd line
+        tableHeaderBuilder.Append(new string(horizontalLine, colWidthSettings[0])).Append(lineCrossing)
             .Append(new string(horizontalLine, colWidthSettings[1])).Append(lineCrossing)
             .Append(new string(horizontalLine, colWidthSettings[2])).Append(lineCrossing)
             .Append(new string(horizontalLine, colWidthSettings[3])).Append(lineCrossing)
             .Append(new string(horizontalLine, colWidthSettings[4])).Append(lineCrossing)
-            .Append(new string(horizontalLine, colWidthSettings[5])).Append("\r\n")
-            .ToString();
+            .Append(new string(horizontalLine, colWidthSettings[5])).AppendLine();
+        
+        var tableHeader = tableHeaderBuilder.ToString();
 
+        // Build pages
         var pages = new Collection<Page>();
         var tableContentBuilder = new StringBuilder(tableHeader);
 
         foreach (var item in items)
         {
             var pageNum = pages.Count + 1;
-            var footerLength = GetFooterTemplate(pageNum).Length;
+            var footerLength = GetFooterTemplate(pageNum, items.Count).Length;
 
             var tableRowBuilder = new StringBuilder()
                 .Append(item.Name.PadRight(colWidthSettings[0])).Append(verticalLine)
@@ -97,7 +118,7 @@ public class DiscordPageGenerator
         }
 
         // Preserve current page if there are any items in the buffer
-        if (tableContentBuilder.Length > tableHeader.Length)
+        if (tableContentBuilder.Length > tableHeaderBuilder.Length)
         {
             pages.Add(new Page($"{header}```{tableContentBuilder}```"));
         }
@@ -107,15 +128,20 @@ public class DiscordPageGenerator
         {
             var pageNum = i + 1;
 
-            var footer = GetFooterTemplate(pageNum);
+            var footer = GetFooterTemplate(pageNum, items.Count);
             pages[i].Content += string.Format(footer, pageNum, pages.Count);
         }
 
         return pages;
     }
 
-    private static string GetFooterTemplate(int pageNumber)
+    private static string GetFooterTemplate(int pageNumber, int itemCount)
     {
+        if (itemCount < 20)
+        {
+            return string.Empty;
+        }
+
         var tooltip = SearchTooltips[(pageNumber - 1) % SearchTooltips.Length];
         return $"Page **{{0}}** out of **{{1}}**. {tooltip}";
     }

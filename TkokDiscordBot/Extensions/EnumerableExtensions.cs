@@ -17,4 +17,10 @@ public static class EnumerableExtensions
     {
         return source[Random.Shared.Next(source.Count())];
     }
+
+    public static bool Contains(this IList<string> source, string value, bool ignoreCase)
+    {
+        var stringComparison = ignoreCase ? StringComparison.CurrentCultureIgnoreCase : StringComparison.InvariantCulture;
+        return source.Any(s => string.Equals(s, value, stringComparison));
+    }
 }

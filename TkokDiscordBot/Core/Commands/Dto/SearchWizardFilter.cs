@@ -10,13 +10,15 @@ public class SearchWizardFilter
 {
     public const string IdPrefix = SearchWizardCommandBase.IdPrefix + "dropdown-";
 
+    private readonly List<string> _selectedOptions = new();
+
     public string Id { get; }
 
     public SearchWizardInputType Type { get; }
 
     public List<DiscordSelectComponentOption> Options { get; }
 
-    public string[] SelectedOptions { get; private set; }
+    public IReadOnlyCollection<string> SelectedOptions => _selectedOptions;
 
     /// <summary>
     /// Creates a new instance of <see cref="SearchWizardFilter"/>.
@@ -38,8 +40,30 @@ public class SearchWizardFilter
         }).ToList();
     }
 
-    public void Select(string[] values)
+    public string BuildSearchTerm()
     {
-        SelectedOptions = values;
+        if (!_selectedOptions.Any())
+        {
+            return null;
+        }
+
+        // Convert filter type to Lucene index field name
+        var field = Type switch
+        {
+            SearchWizardInputType.Boss => "source",
+            SearchWizardInputType.Class => "class",
+            _ => Type.ToString().ToCamelCase()
+        };
+
+        var searchTerm = string.Join(" OR ", _selectedOptions);
+        return _selectedOptions.Count > 1
+            ? $"{field}:({searchTerm})"
+            : $"{field}:{searchTerm}";
+    }
+
+    public void Select(IEnumerable<string> values)
+    {
+        _selectedOptions.Clear();
+        _selectedOptions.AddRange(values);
     }
 }

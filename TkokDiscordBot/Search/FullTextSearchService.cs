@@ -43,11 +43,11 @@ public class FullTextSearchService : IFullTextSearchService, IDisposable
             new Dictionary<string, Analyzer>
             {
                 // Custom EdgeNGram analyzer to enable searching `orta` to find loot from `Ortakna`.
-                { "obtainableFrom", new EdgeNGramAnalyzer(AppLuceneVersion, 3, 10) }
+                { "source", new EdgeNGramAnalyzer(AppLuceneVersion, 4, 10) }
             });
 
         _parser = new MultiFieldQueryParser(AppLuceneVersion,
-            new[] { "id", "name", "slot", "type", "quality", "obtainableFrom", "level", "supportedClasses", "description", "special" },
+            new[] { "id", "name", "slot", "type", "quality", "source", "level", "class", "description", "special" },
             _analyzer);
 
         var indexConfig = new IndexWriterConfig(AppLuceneVersion, _analyzer);

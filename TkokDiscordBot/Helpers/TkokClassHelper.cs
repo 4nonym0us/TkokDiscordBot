@@ -101,7 +101,7 @@ public static class TkokClassHelper
         var itemTypes = ItemTypesByClassDict[tkokClass];
 
         return tkokClass == TkokClass.Warrior
-            ? item => itemTypes.Contains(item.Type) || item.Quality == "Epic" && item.Type == "Leather"
-            : item => itemTypes.Contains(item.Type);
+            ? item => itemTypes.Contains(item.Type, true) || item.Quality == "Epic" && item.Type == "Leather"
+            : item => itemTypes.Contains(item.Type, true);
     }
 }
