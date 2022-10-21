@@ -11,10 +11,10 @@ namespace TkokDiscordBot.Core.CommandsNext;
 
 [Hidden]
 [UsedImplicitly]
-public class PollHasCommand : BaseCommandModule
+public class PollCommand : BaseCommandModule
 {
     [Command("poll")]
-    public async Task Poll(CommandContext ctx, string title, TimeSpan duration, params DiscordEmoji[] options)
+    public async Task PollAsync(CommandContext ctx, string title, TimeSpan duration, params DiscordEmoji[] options)
     {
         // first retrieve the interactivity module from the client
         var interactivity = ctx.Client.GetInteractivity();

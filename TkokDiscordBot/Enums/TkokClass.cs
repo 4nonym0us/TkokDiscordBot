@@ -2,7 +2,6 @@
 
 public enum TkokClass : byte
 {
-    None,
     Arcanist,
     Hydromancer,
     Pyromancer,

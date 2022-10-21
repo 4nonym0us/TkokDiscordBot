@@ -12,7 +12,7 @@ namespace TkokDiscordBot;
 
 internal class Program
 {
-    private static async Task Main(string[] args)
+    private static async Task Main()
     {
         //Setup DI container
         var builder = new ContainerBuilder();

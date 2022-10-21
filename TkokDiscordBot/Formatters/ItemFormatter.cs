@@ -1,70 +1,122 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using DSharpPlus.Interactivity;
 using TkokDiscordBot.Entities;
-using TkokDiscordBot.Extensions;
 
 namespace TkokDiscordBot.Formatters;
 
-public static class ItemFormatter
+/// <summary>
+/// Contains methods to help with properly formatting items in a search results table.
+/// </summary>
+public class DiscordPageGenerator
 {
-    public const int PageSize = 20;
+    public const int MaxPageContentLength = 2000;
 
-    public static IList<Page> ToPages(IReadOnlyCollection<Item> items)
+    private static string[] SearchTooltips { get; } =
     {
-        var pages = new List<Page>();
-        var totalPages = (items.Count + PageSize - 1) / PageSize;
+        " *Tip: Command sender can use emotes to see next pages.*",
+        " *Tip: Use* `!search-wizard` *(or* `!sw`*) command for better searching experience.*",
+        " *Tip: Interactive pagination is automatically disabled in 5 minutes.*",
+        " *Tip: You can search items by type, slot, level, quality, boss. Use* `!search-guide` *to find out how.*",
+        " *Tip: Use* `!explore` *to find out more about the items and their properties.*",
+        " *Tip: Use* `!<item name>` *to get more info about specific item.*",
+        " *Tip: Use* `!<item name> +15` *to get stats of lvl 15 reforged item.*",
+    };
 
-        for (var i = 0; i < totalPages; i++)
+    public IReadOnlyCollection<Page> ToPages(IReadOnlyCollection<Item> items, string header = null)
+    {
+        var colWidthSettings = new int[6];
+        foreach (var item in items)
         {
-            var pageItems = items.Skip(i * PageSize).Take(PageSize).ToList();
-            var currentPageNumber = i + 1;
-
-            pages.Add(new Page { Content = ToMarkdown(pageItems, currentPageNumber, totalPages) });
+            if (colWidthSettings[0] < item.Name.Length) { colWidthSettings[0] = item.Name.Length; }
+            if (colWidthSettings[1] < item.Type.Length) { colWidthSettings[1] = item.Type.Length; }
+            if (colWidthSettings[2] < item.Slot.Length) { colWidthSettings[2] = item.Slot.Length; }
+            if (colWidthSettings[3] < item.Quality.Length) { colWidthSettings[3] = item.Quality.Length; }
+            if (colWidthSettings[4] < item.Level.ToString().Length) { colWidthSettings[4] = item.Level.ToString().Length; }
+            if (colWidthSettings[5] < item.NormalizedObtainableFrom.Length) { colWidthSettings[5] = item.NormalizedObtainableFrom.Length; }
         }
-        return pages;
+
+        return GeneratePagedOutput(items, colWidthSettings, header).ToList();
     }
 
-    public static string ToMarkdown(List<Item> items, int pageNumber, int totalPages)
+    public IEnumerable<Page> GeneratePagedOutput(IReadOnlyCollection<Item> items, int[] colWidthSettings, string header = null)
     {
-        var footer = new StringBuilder();
+        const string verticalLine = " │ ";
+        const char horizontalLine = '─';
+        const string lineCrossing = "─┼─";
+        var extraLength = "```".Length * 2;
+        var headerLength = header?.Length ?? 0;
 
-        if (totalPages > 1)
+        var tableHeader = new StringBuilder()
+            // 1st line
+            .Append("Name".PadRight(colWidthSettings[0])).Append(verticalLine)
+            .Append("Type".PadLeft(colWidthSettings[1])).Append(verticalLine)
+            .Append("Slot".PadLeft(colWidthSettings[2])).Append(verticalLine)
+            .Append("Quality".PadLeft(colWidthSettings[3])).Append(verticalLine)
+            .Append("Lv".PadLeft(colWidthSettings[4])).Append(verticalLine)
+            .Append("Source".PadLeft(colWidthSettings[5])).Append("\r\n")
+            // 2nd line
+            .Append(new string(horizontalLine, colWidthSettings[0])).Append(lineCrossing)
+            .Append(new string(horizontalLine, colWidthSettings[1])).Append(lineCrossing)
+            .Append(new string(horizontalLine, colWidthSettings[2])).Append(lineCrossing)
+            .Append(new string(horizontalLine, colWidthSettings[3])).Append(lineCrossing)
+            .Append(new string(horizontalLine, colWidthSettings[4])).Append(lineCrossing)
+            .Append(new string(horizontalLine, colWidthSettings[5])).Append("\r\n")
+            .ToString();
+
+        var pages = new Collection<Page>();
+        var tableContentBuilder = new StringBuilder(tableHeader);
+
+        foreach (var item in items)
         {
-            footer.Append($"Page **{pageNumber}** out of **{totalPages}**. ");
+            var pageNum = pages.Count + 1;
+            var footerLength = GetFooterTemplate(pageNum).Length;
 
-            if (pageNumber == 1)
+            var tableRowBuilder = new StringBuilder()
+                .Append(item.Name.PadRight(colWidthSettings[0])).Append(verticalLine)
+                .Append(item.Type.PadLeft(colWidthSettings[1])).Append(verticalLine)
+                .Append(item.Slot.PadLeft(colWidthSettings[2])).Append(verticalLine)
+                .Append(item.Quality.PadLeft(colWidthSettings[3])).Append(verticalLine)
+                .Append(item.Level.ToString().PadLeft(colWidthSettings[4])).Append(verticalLine)
+                .Append(item.NormalizedObtainableFrom.PadLeft(colWidthSettings[5]));
+
+            // Check whether the page has spare space left
+            if (headerLength + tableContentBuilder.Length + footerLength + tableRowBuilder.Length + extraLength < MaxPageContentLength)
             {
-                footer.Append(" *Tip: Command sender can use emotes to see next pages.*");
+                // Append to current page
+                tableContentBuilder.AppendLine(tableRowBuilder.ToString());
             }
             else
             {
-                var tipsPool = new[]
-                {
-                    "*Interactive pagination is automatically disabled in 5 minutes.*",
-                    $"*You can use* `!{items[Random.Shared.Next(items.Count)].Name}` *to get more info about specific item.*",
-                    $"*You can use* `!{items[Random.Shared.Next(items.Count)].Name} +{Random.Shared.Next(1, 4) * 5}` *to get reforged stats.*",
-                    "*You can search items by type, slot, level, quality, boss. Use* `!help` *to find out how.*"
-                };
-
-                footer.Append($" *Tip:* {tipsPool.PickRandom()}");
+                // Append to the next page
+                pages.Add(new Page($"{header}```{tableContentBuilder}```"));
+                tableContentBuilder = new StringBuilder(tableHeader).AppendLine(tableRowBuilder.ToString());
             }
         }
 
-        var output = new StringBuilder($"```\r\n{"Name",-33} | {"Type",12} | {"Slot",9} | {"Quality",10} | {"Level",3}\r\n{new string('=', 85)}\r\n");
-        foreach (var item in items)
+        // Preserve current page if there are any items in the buffer
+        if (tableContentBuilder.Length > tableHeader.Length)
         {
-            var line = $"{item.Name,-33} | {item.Type,12} | {item.Slot,9} | {item.Quality,10} | {item.Level,3}";
-            if (output.Length + line.Length + footer.Length + 3 < 2000)
-            {
-                output.AppendLine(line);
-            }
+            pages.Add(new Page($"{header}```{tableContentBuilder}```"));
         }
 
-        output.AppendLine($"```{footer}");
+        // Append footers with correct page numbers
+        for (var i = 0; i < pages.Count; i++)
+        {
+            var pageNum = i + 1;
 
-        return output.ToString();
+            var footer = GetFooterTemplate(pageNum);
+            pages[i].Content += string.Format(footer, pageNum, pages.Count);
+        }
+
+        return pages;
+    }
+
+    private static string GetFooterTemplate(int pageNumber)
+    {
+        var tooltip = SearchTooltips[(pageNumber - 1) % SearchTooltips.Length];
+        return $"Page **{{0}}** out of **{{1}}**. {tooltip}";
     }
 }
