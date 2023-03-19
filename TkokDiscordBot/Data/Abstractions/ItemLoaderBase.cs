@@ -11,7 +11,7 @@ namespace TkokDiscordBot.Data.Abstractions;
 /// </summary>
 public abstract class ItemLoaderBase : IItemsLoader
 {
-    readonly Regex _itemHeaderRegex = new(@"^(?:\""(.*?)\"")(?:, \""(.*?)\"")?(?:, SLOT (\b[A-Z]+))?, TYPE (\b[A-Z\s]+)(?:, LEVEL (\d+)(?: \(\d+\))?, QUALITY (\b[A-Z-]+)\s?)?$", RegexOptions.Compiled);
+    private readonly Regex _itemHeaderRegex = new(@"^(?:\""(.*?)\"")(?:, \""(.*?)\"")?(?:, SLOT (\b[A-Z]+))?, TYPE (\b[A-Z\s]+)(?:, LEVEL (\d+)(?: \(\d+\))?, QUALITY (\b[A-Z-]+)\s?)?$", RegexOptions.Compiled);
 
     protected IEnumerable<Item> ParseLines(string[] itemSource)
     {

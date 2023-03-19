@@ -36,6 +36,29 @@ public abstract class SearchWizardCommandBase : BaseCommandModule
 
     /// <summary>
     /// Starts a Search Wizard, which allows users to specify search criteria in an interactive way.
+    /// Then, performs a search query and displays the results.
+    /// </summary>
+    /// <param name="context"></param>
+    /// <returns></returns>
+    public Task RunSearchWizardAndRespondAsync(CommandContext context)
+    {
+        _ = Task.Run(async () =>
+        {
+            var query = await RunSearchWizardAsync(context);
+
+            if (query is null)
+            {
+                return;
+            }
+
+            await SearchAndRespondAsync(context, query, true);
+        });
+
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Starts a Search Wizard, which allows users to specify search criteria in an interactive way.
     /// </summary>
     /// <param name="context"></param>
     /// <returns>Lucene-compatible search query or null (if user didn't submit the criteria and command has timed out).</returns>
@@ -84,7 +107,7 @@ public abstract class SearchWizardCommandBase : BaseCommandModule
         }, cts.Token);
 
         // Wait for user to click on `Search!` button (or interactivity timeout).
-        var result = await interactivity.WaitForButtonAsync(message, new List<DiscordButtonComponent> { submitButton });
+        var result = await interactivity.WaitForButtonAsync(message, new List<DiscordButtonComponent> { submitButton }, cts.Token);
 
         // Stop handling value changes in dropdowns & delete the original message
         cts.Cancel();
@@ -97,7 +120,6 @@ public abstract class SearchWizardCommandBase : BaseCommandModule
         }
 
         // Build the query
-        //var searchPhrases = filters.Where(f => !f.SelectedOptions.IsNullOrEmpty()).Select(f => f.SelectedOptions).ToList();
         var queryGroups = filters.Where(f => !f.SelectedOptions.IsNullOrEmpty())
             .Select(f => f.BuildSearchTerm())
             .ToList();
