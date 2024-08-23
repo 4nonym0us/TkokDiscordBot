@@ -9,6 +9,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
+using DSharpPlus.Interactivity;
 using DSharpPlus.Net.WebSocket;
 using TkokDiscordBot.Configuration;
 using TkokDiscordBot.Core.Commands;
@@ -25,15 +26,12 @@ namespace TkokDiscordBot.Core
         public const string DefaultMainChannelTopic = "General and Main-discussions - [English]";
 
         private readonly List<IBotCommand> _botCommands;
+        private readonly IEnumerable<ICommandNext> _commandsNext;
         private readonly EntClient _entClient;
         private readonly IItemsRepository _itemsRepository;
         private readonly IItemsStore _itemsStore;
-        private readonly IEnumerable<ICommandNext> _commandsNext;
         private readonly ISettings _settings;
         private DiscordChannel _mainChannel;
-
-        public DiscordClient Client { get; set; }
-        public CommandsNextModule Commands { get; set; }
 
         public Bot(
             IEnumerable<IBotCommand> commands,
@@ -43,8 +41,7 @@ namespace TkokDiscordBot.Core
             IItemsRepository itemsRepository,
             IItemsStore itemsStore)
         {
-            _botCommands = commands.OrderBy(c => (short?)c.GetType().GetAttribute<PriorityAttribute>()?.Priority ?? 0)
-                .ToList();
+            _botCommands = commands.OrderBy(c => (short?) c.GetType().GetAttribute<PriorityAttribute>()?.Priority ?? 0).ToList();
             _commandsNext = commandsNext;
             _settings = settings;
             _entClient = entClient;
@@ -52,11 +49,26 @@ namespace TkokDiscordBot.Core
             _itemsStore = itemsStore;
             _entClient.GameInfoChanged += EntClientOnGameInfoChanged;
 
+
+            Client.DebugLogger.LogMessage(LogLevel.Info, nameof(Bot), "Initializing...", DateTime.Now);
+
             InitializeDiscordClient();
+            InitializeCommandsNext();
+            InitializeInteractivity();
+
+            Client.DebugLogger.LogMessage(LogLevel.Info, nameof(Bot), "Initializing Ready", DateTime.Now);
         }
+
+        public DiscordClient Client { get; set; }
+        public InteractivityModule Interactivity { get; set; }
+        public CommandsNextModule Commands { get; set; }
+
+        #region DiscordClient/CommandNext/Interactivity Initialization
 
         private void InitializeDiscordClient()
         {
+            Client.DebugLogger.LogMessage(LogLevel.Debug, nameof(InitializeDiscordClient), "Starting...", DateTime.Now);
+
             Client = new DiscordClient(new DiscordConfiguration
             {
                 Token = _settings.DiscordToken,
@@ -67,12 +79,19 @@ namespace TkokDiscordBot.Core
 
             Client.SetWebSocketClient<WebSocket4NetClient>();
 
-            Client.DebugLogger.LogMessage(LogLevel.Info, nameof(Bot), "Initializing events", DateTime.Now);
-
             Client.MessageCreated += OnMessageCreated;
             Client.GuildMemberAdded += OnGuildMemberAdded;
             Client.GuildAvailable += OnGuildAvailable;
             Client.ClientErrored += OnClientErrored;
+
+            Client.Ready += OnReady;
+
+            Client.DebugLogger.LogMessage(LogLevel.Debug, nameof(InitializeDiscordClient), "Done.", DateTime.Now);
+        }
+
+        private void InitializeCommandsNext()
+        {
+            Client.DebugLogger.LogMessage(LogLevel.Debug, nameof(InitializeCommandsNext), "Starting...", DateTime.Now);
 
             //TODO: find a non-retarded way to make Autofac handle CommandsNext DI
             var dependencyCollectionBuilder = new DependencyCollectionBuilder();
@@ -93,11 +112,25 @@ namespace TkokDiscordBot.Core
             Commands.RegisterCommands<GameHostingCommand>();
             Commands.RegisterCommands<AdministrationCommands>();
 
-            Client.DebugLogger.LogMessage(LogLevel.Info, nameof(Bot), "Initializing Ready", DateTime.Now);
-
-            Client.Ready += OnReady;
-
+            Client.DebugLogger.LogMessage(LogLevel.Debug, nameof(InitializeCommandsNext), "Done.", DateTime.Now);
         }
+
+        private void InitializeInteractivity()
+        {
+            Client.DebugLogger.LogMessage(LogLevel.Debug, nameof(InitializeInteractivity), "Starting...", DateTime.Now);
+
+            Interactivity = Client.UseInteractivity(new InteractivityConfiguration
+            {
+                PaginationBehaviour =
+                    TimeoutBehaviour.Ignore, // default pagination behaviour to just ignore the reactions
+                PaginationTimeout = TimeSpan.FromMinutes(5), // default pagination timeout to 5 minutes
+                Timeout = TimeSpan.FromMinutes(2) // default timeout for other actions to 2 minutes
+            });
+
+            Client.DebugLogger.LogMessage(LogLevel.Debug, nameof(InitializeInteractivity), "Done.", DateTime.Now);
+        }
+
+        #endregion
 
         #region Discord Client Event Handlers
 
@@ -108,19 +141,9 @@ namespace TkokDiscordBot.Core
             var lobbyInfo = _entClient.GameInfo;
 
             if (lobbyInfo != null)
-            {
-                //DebugLogger.LogMessage(LogLevel.Info, nameof(Bot), $"Updating topic: {lobbyInfo}", DateTime.Now);
-
-                //await UpdateStatusAsync(new DiscordGame(lobbyInfo.ToString()));
                 await _mainChannel.ModifyAsync("main", null, "Currently hosting: " + lobbyInfo);
-            }
             else
-            {
-                //DebugLogger.LogMessage(LogLevel.Info, nameof(Bot), "Updating topic: Default Main Channel Topic", DateTime.Now);
-
-                //await UpdateStatusAsync();
                 await _mainChannel.ModifyAsync("main", null, DefaultMainChannelTopic);
-            }
         }
 
         private Task OnClientErrored(ClientErrorEventArgs e)
@@ -140,7 +163,7 @@ namespace TkokDiscordBot.Core
         private async Task OnReady(ReadyEventArgs e)
         {
             await Task.Yield();
-            _mainChannel = await Client.GetChannelAsync((ulong)_settings.MainChannelId);
+            _mainChannel = await Client.GetChannelAsync((ulong) _settings.MainChannelId);
             Client.DebugLogger.LogMessage(LogLevel.Info, nameof(Bot), "Ready! Setting status message..", DateTime.Now);
 
             await Client.UpdateStatusAsync(new DiscordGame("Creating SkyNet"));
