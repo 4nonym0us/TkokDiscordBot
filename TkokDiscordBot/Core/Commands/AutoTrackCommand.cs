@@ -23,6 +23,11 @@ namespace TkokDiscordBot.Core.Commands
 
         public async Task<bool> Handle(DiscordClient sender, MessageCreateEventArgs eventArgs)
         {
+            if (eventArgs.Message.Author.IsBot || eventArgs.Message.Content.StartsWith("!"))
+            {
+                return false;
+            }
+
             var message = eventArgs.Message.Content;
 
             var commandRegex = new Regex(@"(?:^|\s)([a-z0-9]{3,32}.\d{2})(?:\s|$)").Match(message.Trim());
@@ -39,7 +44,6 @@ namespace TkokDiscordBot.Core.Commands
 
                 await eventArgs.Message.RespondAsync($"<:bot:379752914215763994> Detected game name. :eye: Monitoring game `{gameName}`.");
             }
-
 
             return true;
         }
