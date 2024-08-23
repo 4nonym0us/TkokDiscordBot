@@ -1,22 +1,21 @@
 ﻿using TkokDiscordBot.Entities;
-using TkokDiscordBot.Helpers;
 
-namespace TkokDiscordBot.Extensions
+namespace TkokDiscordBot.Extensions;
+
+public static class ItemExtensions
 {
-    public static class ItemExtensions
+    /// <summary>
+    /// Returned reforged copy of an item. Does not modify item in place.
+    /// </summary>
+    /// <param name="item"></param>
+    /// <param name="level"></param>
+    /// <returns></returns>
+    public static Item Reforged(this Item item, short level)
     {
-        /// <summary>
-        /// Returned reforged copy of an item. Does not modify item in place.
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="level"></param>
-        /// <returns></returns>
-        public static Item Reforged(this Item item, short level)
-        {
-            var reforgedItem = ObjectCopier.Clone(item);
-            reforgedItem.ReforgeLevel = level;
+        //var reforgedItem = ObjectCopier.Clone(item);
+        var reforgedItem = (Item)item.Clone();
+        reforgedItem.ReforgeLevel = level;
 
-            return reforgedItem;
-        }
+        return reforgedItem;
     }
 }

@@ -1,2 +1,2 @@
-dotnet build -c Release -r linux-x64
+dotnet build -c Release --self-contained -r linux-x64
 pause

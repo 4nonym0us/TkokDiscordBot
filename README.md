@@ -1,26 +1,26 @@
 # TKokDiscordBot
 
+## Demo
+
+![Demo 1: Querying a single item by name](https://github.com/4nonym0us/TkokDiscordBot/raw/master/assets/images/demo1.png)
+
+![Demo 2: Interactive item search](https://github.com/4nonym0us/TkokDiscordBot/raw/master/assets/images/demo2.gif)
+
 ## Requirements
 
- * .NET Core SDK 3.1
+ * .NET 6
  * Settings are stored in `user-secrets.json`, which should be located at executable's directory
 ```json
 {
-  "DiscordToken": "~",
-  "EntUsername": "~",
-  "EntPassword": "~",
-  "EntMapId": "~",
-  "DiscordBotAdmins": "~",
-  "MainChannelId": 214755622711853056
+  "DiscordToken": "<YOUR_DISCORD_TOKEN>",
+  "BotCommandsChannelId": 378620967066271769,
 }
 ```
+
 ## Supported Commands
 ```
 !<item name>
 Find item by name. Replace <item name> with a item name, does not have to be the full name
-
-!track <gamename>
-Tracks a game on EntGaming.Net by game name. Lobby info will be displayed in the Topic of main channel.
 
 !search <any filter> <class:ClassName> <level:XX> <skip:YY>
 Search for items. All filters are optional, multiple filters can be combined. Possible values:
