@@ -20,16 +20,9 @@ public class SearchWizardCommand : SearchWizardCommandBase, IHasCommandUsage
 
     [Command("search-wizard")]
     [Aliases("wizard", "sw")]
-    public async Task SearchWizardAsync(CommandContext context)
+    public Task SearchWizardAsync(CommandContext context)
     {
-        var query = await RunSearchWizardAsync(context);
-
-        if (query is null)
-        {
-            return;
-        }
-
-        await SearchAndRespondAsync(context, query, true);
+        return RunSearchWizardAndRespondAsync(context);
     }
 
     public CommandInfo GetUsage()

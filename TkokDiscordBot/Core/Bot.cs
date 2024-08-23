@@ -49,7 +49,8 @@ public class Bot : IDisposable
         {
             Token = _settings.DiscordToken,
             TokenType = TokenType.Bot,
-            MinimumLogLevel = LogLevel.Information
+            MinimumLogLevel = LogLevel.Information,
+            Intents = DiscordIntents.AllUnprivileged | DiscordIntents.MessageContents
         });
 
         Client.ComponentInteractionCreated += OnComponentInteractionCreated;
@@ -133,7 +134,9 @@ public class Bot : IDisposable
     {
         // Bot shouldn't handle commands of other bots or itself
         if (args.Author.IsBot || args.Handled)
+        {
             return;
+        }
 
         // Custom `!help` command handler
         if (Regex.IsMatch(args.Message.Content.Trim(), @"^!(help|commands|cmds|cmd|h|\?)$", RegexOptions.Compiled | RegexOptions.IgnoreCase))

@@ -36,7 +36,8 @@ public class GetItemByNameCommand : IBotCommand
             return false;
         }
 
-        if (!args.Channel.IsPrivate && args.Channel.Id != _settings.BotCommandsChannelId)
+        if (!args.Channel.IsPrivate &&
+            args.Channel.Id != _settings.BotCommandsChannelId && args.Guild.Id == _settings.MainServerId)
         {
             var botCommandChannel = await client.GetChannelAsync(_settings.BotCommandsChannelId);
             await args.Message.RespondAsync($"Please use this command in {botCommandChannel.Mention} instead.");

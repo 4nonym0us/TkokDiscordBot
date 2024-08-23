@@ -4,7 +4,7 @@ using TkokDiscordBot.Entities;
 
 namespace TkokDiscordBot.Helpers;
 
-internal class ReforgingHelper
+internal static class ReforgingHelper
 {
     private const double ReforgingMultiplier = 0.03334;
     private static readonly string[] PropertiesToTruncateOnReforge =

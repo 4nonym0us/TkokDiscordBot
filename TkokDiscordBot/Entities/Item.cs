@@ -35,7 +35,7 @@ public class Item : ICloneable
 
     public string Icon { get; set; }
 
-    public string IconUrl => !Icon.IsNullOrEmpty() ? "http://185.10.17.236/icons/" + Icon : string.Empty;
+    public string IconUrl => !Icon.IsNullOrEmpty() ? "http://23.94.105.165/icons/" + Icon : string.Empty;
 
     public string ClassRestriction { get; set; }
 

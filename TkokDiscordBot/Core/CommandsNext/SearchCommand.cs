@@ -28,28 +28,24 @@ public class SearchCommand : SearchWizardCommandBase, IHasCommandUsage
     [Aliases("s")]
     public async Task SearchAsync(CommandContext context, [RemainingText] string query)
     {
-        if (!context.Channel.IsPrivate && context.Channel.Id != _settings.BotCommandsChannelId)
+        if (!context.Channel.IsPrivate &&
+            context.Channel.Id != _settings.BotCommandsChannelId && context.Guild.Id == _settings.MainServerId)
         {
             var botCommandChannel = context.Guild.GetChannel(_settings.BotCommandsChannelId);
             await context.RespondAsync($"Please use this command in {botCommandChannel.Mention} instead.");
             return;
         }
 
-
-        // Fallback to Search Wizard if no arguments were provided.
-        var usedSearchWizard = false;
         if (query is null)
         {
-            query = await RunSearchWizardAsync(context);
-            usedSearchWizard = true;
-            if (query is null)
-            {
-                return;
-            }
+            // Fallback to Search Wizard if no arguments were provided.
+            await RunSearchWizardAndRespondAsync(context);
         }
-
-        //Fetch and display the items
-        await SearchAndRespondAsync(context, query, usedSearchWizard);
+        else
+        {
+            //Fetch and display the items
+            await SearchAndRespondAsync(context, query, false);
+        }
     }
 
     public CommandInfo GetUsage()
