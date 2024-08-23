@@ -41,7 +41,18 @@ namespace TkokDiscordBot.Core.Commands
             }
 
             var builder = new DiscordEmbedBuilder();
-            builder.WithColor(DiscordColor.Green);
+            switch (item.Quality)
+            {
+                case "Enchanted":
+                    builder.WithColor(new DiscordColor(255, 255, 0));
+                    break;
+                case "Epic":
+                    builder.WithColor(new DiscordColor(255, 102, 255));
+                    break;
+                case "Relic":
+                    builder.WithColor(new DiscordColor(255, 204, 58));
+                    break;
+            }
 
             if (string.IsNullOrWhiteSpace(item.Description))
             {
