@@ -1,2 +1,3 @@
-dotnet build -c Release --self-contained -r linux-x64
+@echo off
+dotnet build -c Release --self-contained false -r linux-x64 -p:PublishReadyToRun=true
 pause

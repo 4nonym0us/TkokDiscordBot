@@ -7,4 +7,6 @@ namespace TkokDiscordBot.Data.Abstractions;
 public interface IItemsLoader
 {
     Task<IEnumerable<Item>> LoadAsync();
+
+    IEnumerable<Item> Load();
 }

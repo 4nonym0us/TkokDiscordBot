@@ -14,6 +14,7 @@ using DSharpPlus.Interactivity.Extensions;
 using Microsoft.Extensions.Logging;
 using TkokDiscordBot.Configuration;
 using TkokDiscordBot.Core.Commands.Abstractions;
+using TkokDiscordBot.Core.CommandsNext;
 using TkokDiscordBot.Extensions;
 
 namespace TkokDiscordBot.Core;
@@ -30,7 +31,7 @@ public class Bot : IDisposable
         ISettings settings, IServiceProvider serviceProvider)
     {
         _botCommands = commands.OrderBy(c => c.GetCommandPriority()).ToList();
-        _commandUsages = commandsUsageList.ToList();
+        _commandUsages = commandsUsageList.OrderBy(ci => ci.GetUsage().Order).ToList();
         _settings = settings;
 
         InitializeDiscordClient();
@@ -51,6 +52,7 @@ public class Bot : IDisposable
             MinimumLogLevel = LogLevel.Information
         });
 
+        Client.ComponentInteractionCreated += OnComponentInteractionCreated;
         Client.MessageCreated += OnMessageCreated;
         Client.GuildAvailable += OnGuildAvailable;
         Client.ClientErrored += OnClientErrored;
@@ -82,7 +84,8 @@ public class Bot : IDisposable
         {
             PaginationBehaviour = PaginationBehaviour.WrapAround,
             AckPaginationButtons = true,
-            Timeout = TimeSpan.FromMinutes(5)
+            Timeout = TimeSpan.FromMinutes(5),
+            ButtonBehavior = ButtonPaginationBehavior.Disable
         });
 
         Client.Logger.LogDebug("Interactivity extension has been initialized.");
@@ -91,6 +94,15 @@ public class Bot : IDisposable
     #endregion
 
     #region Discord Client Event Handlers
+
+    private static async Task OnComponentInteractionCreated(DiscordClient client, ComponentInteractionCreateEventArgs args)
+    {
+        // Use deferred message update interaction response in Search Wizard
+        if (args.Id.StartsWith(SearchWizardCommandBase.IdPrefix))
+        {
+            await args.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);
+        }
+    }
 
     private Task OnCommandErrored(CommandsNextExtension commandsNext, CommandErrorEventArgs args)
     {
@@ -142,7 +154,7 @@ public class Bot : IDisposable
         // Handle chat messages by custom bot commands
         foreach (var command in _botCommands)
         {
-            var handled = await command.HandleAsync(client, args).ConfigureAwait(false);
+            var handled = await command.HandleAsync(client, args);
 
             if (handled)
             {

@@ -17,6 +17,7 @@ public abstract class ItemLoaderBase : IItemsLoader
     {
         var obtainableFrom = string.Empty;
         var i = 0;
+        var itemId = 1;
         Item currentItem = null;
         while (itemSource.Length > i)
         {
@@ -34,6 +35,7 @@ public abstract class ItemLoaderBase : IItemsLoader
                 {
                     currentItem = new Item
                     {
+                        Id = itemId++,
                         ObtainableFrom = obtainableFrom,
                         Name = itemRegex.Result("$1"),
                         Description = itemRegex.Result("$2"),
@@ -98,4 +100,6 @@ public abstract class ItemLoaderBase : IItemsLoader
     }
 
     public abstract Task<IEnumerable<Item>> LoadAsync();
+
+    public abstract IEnumerable<Item> Load();
 }

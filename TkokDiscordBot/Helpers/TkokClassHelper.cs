@@ -1,18 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Castle.Core.Internal;
 using TkokDiscordBot.Entities;
 using TkokDiscordBot.Enums;
+using TkokDiscordBot.Extensions;
 
 namespace TkokDiscordBot.Helpers;
 
 public static class TkokClassHelper
 {
-    private static readonly Dictionary<TkokClass, string[]> EquipableItemsDict;
+    private static readonly Dictionary<TkokClass, string[]> ItemTypesByClassDict;
+    private static readonly Dictionary<TkokClass, string> HumanFriendlyNamesDict;
 
     static TkokClassHelper()
     {
-        EquipableItemsDict = new Dictionary<TkokClass, string[]>
+        ItemTypesByClassDict = new Dictionary<TkokClass, string[]>
         {
             { TkokClass.Arcanist, new[] { "Mithril", "Cloth", "Staff", "Book", "Wand", "Orb" } },
             { TkokClass.Hydromancer, new[] { "Mithril", "Cloth", "Staff", "Book", "Wand", "Orb" } },
@@ -33,21 +36,72 @@ public static class TkokClassHelper
             { TkokClass.Earthquaker, new[] { "Mithril", "Mail", "Axe", "Dual Axe", "Idol" } },
             { TkokClass.ShadowShaman, new[] { "Mithril", "Cloth", "Staff", "Idol", "Wand", "Orb" } }
         };
+
+        HumanFriendlyNamesDict = Enum.GetValues<TkokClass>().ToDictionary(c => c, c => c.ToString().ToTitleCase());
     }
 
-    public static Func<Item, bool> GetPredicateForItemLookup(TkokClass @class)
+    /// <summary>
+    /// Returns a human-friendly string representation of specified class name.
+    /// Example: `TkokClass.ShadowShaman` gets converted to `Shadow Shaman`.
+    /// </summary>
+    /// <param name="tkokClass"></param>
+    /// <returns></returns>
+    public static string GetClassName(TkokClass tkokClass) => HumanFriendlyNamesDict[tkokClass];
+
+    /// <summary>
+    /// Attempts to parse a string representation of class name to <see cref="TkokClass"/>.
+    /// </summary>
+    /// <param name="className"></param>
+    /// <param name="tkokClass"></param>
+    /// <returns></returns>
+    public static bool TryParse(string className, out TkokClass tkokClass)
     {
-        if (@class == TkokClass.None)
-            return null;
+        if (Enum.TryParse(typeof(TkokClass), className, true, out var c))
+        {
+            tkokClass = (TkokClass)c!;
+            return true;
+        }
 
-        var itemTypes = EquipableItemsDict[@class];
-        Func<Item, bool> classFilterPredicate;
+        tkokClass = default;
+        return false;
+    }
 
-        if (@class == TkokClass.Warrior)
-            classFilterPredicate = item => itemTypes.Contains(item.Type) || item.Quality == "Epic" && item.Type == "Leather";
+    /// <summary>
+    /// Returns list of classes that can equip specific item.
+    /// Note: does not take accessories into account because they available for everyone.
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns></returns>
+    public static IEnumerable<TkokClass> GetUsersOfItem(Item item)
+    {
+        if (!item.ClassRestriction.IsNullOrEmpty() && TryParse(item.ClassRestriction, out var tkokClass))
+        {
+            yield return tkokClass;
+        }
         else
-            classFilterPredicate = item => itemTypes.Contains(item.Type);
+        {
+            foreach (var @class in Enum.GetValues<TkokClass>())
+            {
+                if (GetPredicateForItemLookup(@class)(item))
+                {
+                    yield return @class;
+                }
+            }
+        }
+    }
 
-        return classFilterPredicate;
+    /// <summary>
+    /// Returns a predicate to test whether an item can be equipped by specific class.
+    /// Note: does not take accessories into account because they available for everyone.
+    /// </summary>
+    /// <param name="tkokClass"></param>
+    /// <returns></returns>
+    public static Func<Item, bool> GetPredicateForItemLookup(TkokClass tkokClass)
+    {
+        var itemTypes = ItemTypesByClassDict[tkokClass];
+
+        return tkokClass == TkokClass.Warrior
+            ? item => itemTypes.Contains(item.Type) || item.Quality == "Epic" && item.Type == "Leather"
+            : item => itemTypes.Contains(item.Type);
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TkokDiscordBot.Data.Abstractions;
@@ -14,20 +15,29 @@ public class ItemsStore : IItemsStore
     public ItemsStore(IItemsLoader itemsLoader)
     {
         _itemsLoader = itemsLoader;
+
+        ReloadItems();
     }
 
-    public async Task<IReadOnlyCollection<Item>> GetAllAsync()
-    {
-        if (_items == null || _items.Any())
-        {
-            await ReloadItemsAsync();
-        }
+    public event EventHandler<IReadOnlyCollection<Item>> ItemsReloaded;
 
-        return _items;
+    public IReadOnlyCollection<Item> GetAll() => _items;
+
+    public void ReloadItems()
+    {
+        var items = _itemsLoader.Load();
+        _items = items.OrderBy(i => i.Level).ThenBy(i => i.Name).ToList();
     }
 
     public async Task ReloadItemsAsync()
     {
-        _items = (await _itemsLoader.LoadAsync()).OrderBy(i => i.Level).ThenBy(i => i.Name).ToList();
+        var items = await _itemsLoader.LoadAsync();
+        _items = items.OrderBy(i => i.Level).ThenBy(i => i.Name).ToList();
+        OnItemsReloaded(_items);
+    }
+
+    protected virtual void OnItemsReloaded(IReadOnlyCollection<Item> items)
+    {
+        ItemsReloaded?.Invoke(this, items);
     }
 }

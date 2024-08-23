@@ -31,7 +31,7 @@ public class GetItemByNameCommand : IBotCommand
     public async Task<bool> HandleAsync(DiscordClient client, MessageCreateEventArgs args)
     {
         var message = args.Message.Content;
-        if (!message.StartsWith("!"))
+        if (!message.StartsWith("!") || message.Length <= 3)
         {
             return false;
         }
@@ -47,8 +47,7 @@ public class GetItemByNameCommand : IBotCommand
 
         //Try to get exact match first , partial match if first lookup fails
         var item =
-            await _repository.GetAsync(filter) ??
-            (await _repository.SearchAsync(filter)).FirstOrDefault();
+            _repository.Get(filter) ?? _repository.Search(filter).FirstOrDefault();
 
         if (item == null)
         {
@@ -71,7 +70,7 @@ public class GetItemByNameCommand : IBotCommand
                 builder.WithColor(new DiscordColor(205, 0, 0));
                 break;
         }
-            
+
         if (string.IsNullOrWhiteSpace(item.Description))
         {
             builder.WithTitle(item.ReforgedName);
@@ -129,8 +128,9 @@ public class GetItemByNameCommand : IBotCommand
     {
         var info = new CommandInfo
         {
-            Command = "!<item name>",
-            Usage = "Find item by name. Replace **<item name>** with a item name, does not have to be the full name\r\n"
+            Command = "`!<item name>`",
+            Usage = "Find item by name. Replace **<item name>** with a item name, does not have to be the full name.\r\n",
+            Order = -2
         };
         return info;
     }

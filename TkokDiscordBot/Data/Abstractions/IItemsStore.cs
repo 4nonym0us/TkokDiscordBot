@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using TkokDiscordBot.Entities;
 
@@ -6,7 +7,9 @@ namespace TkokDiscordBot.Data.Abstractions;
 
 public interface IItemsStore
 {
-    Task<IReadOnlyCollection<Item>> GetAllAsync();
+    IReadOnlyCollection<Item> GetAll();
 
     Task ReloadItemsAsync();
+
+    event EventHandler<IReadOnlyCollection<Item>> ItemsReloaded;
 }

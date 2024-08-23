@@ -18,4 +18,15 @@ public class LocalFileItemsLoader : ItemLoaderBase
 
         return ParseLines(fileData);
     }
+
+    /// <summary>
+    /// Loads items from `droplist.txt`.
+    /// </summary>
+    /// <returns></returns>
+    public override IEnumerable<Item> Load()
+    {
+        var fileData = File.ReadAllLines(@"droplist.txt");
+
+        return ParseLines(fileData);
+    }
 }
