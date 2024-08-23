@@ -12,6 +12,7 @@ using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Net.WebSocket;
 using TkokDiscordBot.Configuration;
+using TkokDiscordBot.Core.Commands;
 using TkokDiscordBot.Core.Commands.Abstractions;
 using TkokDiscordBot.Core.Commands.Attributes;
 using TkokDiscordBot.Core.CommandsNext;
@@ -39,7 +40,7 @@ namespace TkokDiscordBot.Core
             IItemsRepository itemsRepository,
             IItemsStore itemsStore)
         {
-            _botCommands = commands.OrderBy(c => (short?) c.GetType().GetAttribute<PriorityAttribute>()?.Priority ?? 0).ToList();
+            _botCommands = commands.OrderBy(c => (short?)c.GetType().GetAttribute<PriorityAttribute>()?.Priority ?? 0).ToList();
             _commandsNext = commandsNext;
             _settings = settings;
             _entClient = entClient;
@@ -98,10 +99,16 @@ namespace TkokDiscordBot.Core
                 EnableDefaultHelp = false
             };
             Commands = Client.UseCommandsNext(commandsNextConfig);
+            foreach (var commandNext in _commandsNext)
+            {
+                
+            }
             Commands.RegisterCommands<PingCommand>();
             Commands.RegisterCommands<TrackCommand>();
             Commands.RegisterCommands<GameHostingCommand>();
             Commands.RegisterCommands<AdministrationCommands>();
+            Commands.RegisterCommands<FullTextSearchItemsCommand>();
+            Commands.RegisterCommands<PollCommand>();
 
             Client.DebugLogger.LogMessage(LogLevel.Debug, nameof(InitializeCommandsNext), "Completed.", DateTime.Now);
         }
@@ -110,8 +117,7 @@ namespace TkokDiscordBot.Core
         {
             Interactivity = Client.UseInteractivity(new InteractivityConfiguration
             {
-                PaginationBehaviour =
-                    TimeoutBehaviour.Ignore, // default pagination behaviour to just ignore the reactions
+                PaginationBehaviour = TimeoutBehaviour.Delete, // default pagination behaviour to just ignore the reactions
                 PaginationTimeout = TimeSpan.FromMinutes(5), // default pagination timeout to 5 minutes
                 Timeout = TimeSpan.FromMinutes(2) // default timeout for other actions to 2 minutes
             });
@@ -152,7 +158,7 @@ namespace TkokDiscordBot.Core
         private async Task OnReady(ReadyEventArgs e)
         {
             await Task.Yield();
-            _mainChannel = await Client.GetChannelAsync((ulong) _settings.MainChannelId);
+            _mainChannel = await Client.GetChannelAsync((ulong)_settings.MainChannelId);
             _defaultMainChannelTopic = _mainChannel.Topic;
             Client.DebugLogger.LogMessage(LogLevel.Info, nameof(Bot), "Ready! Setting status message..", DateTime.Now);
 
