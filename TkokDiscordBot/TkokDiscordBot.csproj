@@ -84,7 +84,7 @@
     <Compile Include="Configuration\Settings.cs" />
     <Compile Include="Core\Bot.cs" />
     <Compile Include="Core\Commands\Abstractions\ICommandNext.cs" />
-    <Compile Include="Core\Commands\AdministrationCommand.cs" />
+    <Compile Include="Core\CommandsNext\AdministrationCommands.cs" />
     <Compile Include="Dependency\CommandsModule.cs" />
     <Compile Include="Dependency\CoreModule.cs" />
     <Compile Include="Enums\CommandPriority.cs" />
