@@ -7,10 +7,10 @@ namespace TkokDiscordBot.Core.CommandsNext;
 
 [Hidden]
 [UsedImplicitly]
-public class PingHasCommand : BaseCommandModule
+public class PingCommand : BaseCommandModule
 {
     [Command("ping")]
-    public async Task Ping(CommandContext context)
+    public async Task PingAsync(CommandContext context)
     {
         await context.RespondAsync($"!pong. WS Latency: {context.Client.Ping} ms.");
     }

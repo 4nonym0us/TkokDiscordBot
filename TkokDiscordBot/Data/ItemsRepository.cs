@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using TkokDiscordBot.Data.Abstractions;
 using TkokDiscordBot.Entities;
-using TkokDiscordBot.Enums;
 using TkokDiscordBot.Extensions;
-using TkokDiscordBot.Helpers;
 
 namespace TkokDiscordBot.Data;
 
@@ -21,14 +18,14 @@ public class ItemsRepository : IItemsRepository
         _itemsStore = itemsStore;
     }
 
-    public Task<IReadOnlyCollection<Item>> GetAllAsync()
+    public IReadOnlyCollection<Item> GetAll()
     {
-        return _itemsStore.GetAllAsync();
+        return _itemsStore.GetAll();
     }
 
-    public async Task<Item> GetAsync(string name)
+    public Item Get(string name)
     {
-        var query = await _itemsStore.GetAllAsync();
+        var query = _itemsStore.GetAll();
         var reforgedItemMatch = _reforgedItemRegex.Match(name);
 
         var itemName = reforgedItemMatch.Success ? reforgedItemMatch.Groups[1].Value : name;
@@ -45,10 +42,10 @@ public class ItemsRepository : IItemsRepository
         return reforgedItem;
     }
     
-    public async Task<IReadOnlyCollection<Item>> SearchAsync(string name = null, string slot = null, string type = null,
+    public IReadOnlyCollection<Item> Search(string name = null, string slot = null, string type = null,
         string quality = null, int? level = null, string boss = null)
     {
-        var items = await _itemsStore.GetAllAsync();
+        var items = _itemsStore.GetAll().AsQueryable();
 
         return items.AsQueryable()
             .WhereIf(!string.IsNullOrWhiteSpace(name), item => item.Name.Contains(name, StringComparison.OrdinalIgnoreCase))
@@ -57,25 +54,6 @@ public class ItemsRepository : IItemsRepository
             .WhereIf(!string.IsNullOrWhiteSpace(quality), item => item.Quality.Contains(quality, StringComparison.OrdinalIgnoreCase))
             .WhereIf(!string.IsNullOrWhiteSpace(boss), item => item.ObtainableFrom.Contains(boss, StringComparison.OrdinalIgnoreCase))
             .WhereIf(level.HasValue, item => item.Level == level.Value)
-            .ToList();
-    }
-
-    public async Task<IReadOnlyCollection<Item>> FullTextSearchAsync(string filter, int? level, TkokClass @class)
-    {
-        var query = (await _itemsStore.GetAllAsync()).AsQueryable();
-
-        if (!string.IsNullOrWhiteSpace(filter))
-        {
-            query = query.Where(item =>
-                item.Name.Contains(filter, StringComparison.OrdinalIgnoreCase) ||
-                item.Slot.Contains(filter, StringComparison.OrdinalIgnoreCase) ||
-                item.Type.Contains(filter, StringComparison.OrdinalIgnoreCase) ||
-                item.Quality.Contains(filter, StringComparison.OrdinalIgnoreCase) ||
-                item.ObtainableFrom.Contains(filter, StringComparison.OrdinalIgnoreCase));
-        }
-
-        return query.WhereIf(level.HasValue, item => item.Level == level.Value)
-            .WhereIf(@class != TkokClass.None, item => TkokClassHelper.GetPredicateForItemLookup(@class)(item))
             .ToList();
     }
 }
