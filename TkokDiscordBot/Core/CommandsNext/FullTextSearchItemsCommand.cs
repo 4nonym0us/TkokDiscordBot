@@ -74,9 +74,15 @@ namespace TkokDiscordBot.Core.CommandsNext
             }
 
             var messagePages = ItemFormatter.ToPages(items);
-
-            var interactivity = context.Client.GetInteractivityModule();
-            await interactivity.SendPaginatedMessage(context.Channel, context.User, messagePages);
+            if (messagePages.Count() > 1)
+            {
+                var interactivity = context.Client.GetInteractivityModule();
+                await interactivity.SendPaginatedMessage(context.Channel, context.User, messagePages);
+            }
+            else
+            {
+                await context.RespondAsync(messagePages[0].Content);
+            }
         }
 
         public CommandInfo GetUsage()
