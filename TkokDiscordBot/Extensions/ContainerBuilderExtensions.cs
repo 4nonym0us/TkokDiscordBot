@@ -6,12 +6,12 @@ namespace TkokDiscordBot.Extensions;
 
 public static class ContainerBuilderExtensions
 {
-    public static void RegisterCommands<TType>(this ContainerBuilder builder)
+    public static void RegisterCommands<TType>(this ContainerBuilder builder) where TType : notnull
     {
         var cmdInterface = typeof(TType);
         var assembly = cmdInterface.Assembly;
         var types = assembly.GetTypes()
-            .Where(type => type.IsClass && !type.IsAbstract && cmdInterface.IsAssignableFrom(type))
+            .Where(type => type is { IsClass: true, IsAbstract: false } && cmdInterface.IsAssignableFrom(type))
             .ToList();
 
         foreach (var type in types)
