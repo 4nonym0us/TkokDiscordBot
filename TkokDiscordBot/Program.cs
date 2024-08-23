@@ -3,7 +3,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Autofac;
 using Config.Net;
-using DSharpPlus.Net.WebSocket;
 using TkokDiscordBot.Configuration;
 using TkokDiscordBot.Core;
 using TkokDiscordBot.Core.Commands.Abstractions;
@@ -47,10 +46,9 @@ namespace TkokDiscordBot
 
         private static async Task MainAsync()
         {
-            var discordBot = Container.Resolve<Bot>();
-            discordBot.SetWebSocketClient<WebSocket4NetClient>();
+            var bot = Container.Resolve<Bot>();
 
-            await discordBot.ConnectAsync();
+            await bot.Client.ConnectAsync();
             await Task.Delay(-1);
         }
 

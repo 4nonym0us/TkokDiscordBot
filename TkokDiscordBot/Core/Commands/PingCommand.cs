@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using DSharpPlus;
 using DSharpPlus.EventArgs;
 using TkokDiscordBot.Core.Commands.Abstractions;
 using TkokDiscordBot.Core.Commands.Dto;
@@ -7,7 +8,7 @@ namespace TkokDiscordBot.Core.Commands
 {
     internal class PingCommand : IBotCommand
     {
-        public async Task<bool> Handle(Bot sender, MessageCreateEventArgs eventArgs)
+        public async Task<bool> Handle(DiscordClient sender, MessageCreateEventArgs eventArgs)
         {
             if (eventArgs.Message.Content == "!ping")
             {

@@ -1,4 +1,4 @@
-namespace TkokDiscordBot.Core.Commands.Attributes
+namespace TkokDiscordBot.Enums
 {
     public enum CommandPriority : short
     {
