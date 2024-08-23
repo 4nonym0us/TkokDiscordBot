@@ -10,7 +10,7 @@ namespace TkokDiscordBot.Formatters
 {
     public static class ItemFormatter
     {
-        public static IEnumerable<Page> ToPages(List<Item> items, int? skip = null)
+        public static IList<Page> ToPages(List<Item> items, int? skip = null)
         {
             var pages = new List<Page>();
             for (var i = 0; i < items.Count; i += 20)
