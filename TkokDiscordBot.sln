@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27004.2008
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TkokDiscordBot", "TkokDiscordBot\TkokDiscordBot.csproj", "{888260FA-D7F3-4BDF-A127-508687E21B2B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TkokDiscordBot", "TkokDiscordBot\TkokDiscordBot.csproj", "{D4D4645E-EE89-41AA-8537-2834232E0CD1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{888260FA-D7F3-4BDF-A127-508687E21B2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{888260FA-D7F3-4BDF-A127-508687E21B2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{888260FA-D7F3-4BDF-A127-508687E21B2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{888260FA-D7F3-4BDF-A127-508687E21B2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4D4645E-EE89-41AA-8537-2834232E0CD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4D4645E-EE89-41AA-8537-2834232E0CD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4D4645E-EE89-41AA-8537-2834232E0CD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4D4645E-EE89-41AA-8537-2834232E0CD1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {037857A9-3605-43E6-AC77-AC9369105FC6}
+		SolutionGuid = {3A1BE5F0-58A1-4C7C-AEF1-F66459ECB40B}
 	EndGlobalSection
 EndGlobal

@@ -2,8 +2,8 @@
 
 ## Requirements
 
- * .NET Framework 4.6.1 or above is required.
- * Settings are stored in `user-secrets.json`, which should be stored at executable directory
+ * .NET Core SDK 3.1
+ * Settings are stored in `user-secrets.json`, which should be located at executable's directory
 ```json
 {
   "DiscordToken": "~",
@@ -16,9 +16,6 @@
 ```
 ## Supported Commands
 ```
-!host <owner> [region]
-Host a game on Ent. Default region: europe. Available regions: atlanta, ny, la, europe, au, jp, sg.
-
 !<item name>
 Find item by name. Replace <item name> with a item name, does not have to be the full name
 

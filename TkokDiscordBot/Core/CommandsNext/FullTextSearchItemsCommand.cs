@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity;
+using TkokDiscordBot.Configuration;
 using TkokDiscordBot.Core.Commands.Abstractions;
 using TkokDiscordBot.Core.Commands.Dto;
 using TkokDiscordBot.Data.Abstractions;
@@ -17,10 +18,12 @@ namespace TkokDiscordBot.Core.CommandsNext
     internal class FullTextSearchItemsCommand : ICommandNext
     {
         private readonly IItemsRepository _repository;
+        private readonly ISettings _settings;
 
-        public FullTextSearchItemsCommand(IItemsRepository repository)
+        public FullTextSearchItemsCommand(IItemsRepository repository, ISettings settings)
         {
             _repository = repository;
+            _settings = settings;
         }
 
         /// <summary>
@@ -49,6 +52,13 @@ namespace TkokDiscordBot.Core.CommandsNext
             var message = context.Message.Content;
             if (commandPrefixes.All(commandPrefix => !message.StartsWith(commandPrefix)))
             {
+                return;
+            }
+
+            if (context.Channel.Id == _settings.MediaChannelId)
+            {
+                var botCommandChannel = context.Guild.GetChannel(_settings.BotCommandsChannelId);
+                await context.RespondAsync($"Please use this command in {botCommandChannel.Mention} instead.");
                 return;
             }
 
@@ -87,20 +97,22 @@ namespace TkokDiscordBot.Core.CommandsNext
 
         public CommandInfo GetUsage()
         {
-            var info = new CommandInfo();
-            info.Command = "!search <any filter> <class:ClassName> <level:XX>";
-            info.Usage =
-                "Search for items. All filters are optional, multiple filters can be combined. Possible values:\r\n" +
-                "\t* **filter**: any item name, boss name, item type, slot, quality, does not have to be the full name\r\n" +
-                "\t* **level**: number from 8 to 47\r\n" +
-                "\t* **class**: class name (examples: Warrior, ChaoticKnight, Shadowblade, PhantomStalker, ShadowShaman, etc.)\r\n" +
-                "**Example usage**:\r\n" +
-                "\t!search Ortakna VX\r\n" +
-                "\t!search level:35 hat\r\n" +
-                "\t!search hat level:35\r\n" +
-                "\t!s class:PhantomStalker\r\n" +
-                "\t!s class ranger shoulder\r\n" +
-                "\t!s level 35 \r\n";
+            var info = new CommandInfo
+            {
+                Command = "!search <any filter> <class:ClassName> <level:XX>",
+                Usage =
+                    "Search for items. All filters are optional, multiple filters can be combined. Possible values:\r\n" +
+                    "\t* **filter**: any item name, boss name, item type, slot, quality, does not have to be the full name\r\n" +
+                    "\t* **level**: number from 8 to 47\r\n" +
+                    "\t* **class**: class name (examples: Warrior, ChaoticKnight, Shadowblade, PhantomStalker, ShadowShaman, etc.)\r\n" +
+                    "**Example usage**:\r\n" +
+                    "\t!search Ortakna VX\r\n" +
+                    "\t!search level:35 hat\r\n" +
+                    "\t!search hat level:35\r\n" +
+                    "\t!s class:PhantomStalker\r\n" +
+                    "\t!s class ranger shoulder\r\n" +
+                    "\t!s level 35 \r\n"
+            };
             return info;
         }
     }
