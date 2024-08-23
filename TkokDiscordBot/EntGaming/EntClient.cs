@@ -34,7 +34,6 @@ namespace TkokDiscordBot.EntGaming
 
         public EntClient(ISettings settings)
         {
-            Console.WriteLine(Guid.NewGuid() + "XXX");
             _settings = settings;
             _cookieContainer = new CookieContainer();
 
@@ -54,7 +53,7 @@ namespace TkokDiscordBot.EntGaming
                 {
                     _gameInfo = value;
                     OnPropertyChanged(nameof(GameInfo));
-                    if (!_gameInfo.GameName.IsNullOrEmpty() && _gameInfo.GameName.StartsWith(_settings.EntUsername))
+                    if (value != null && !value.GameName.IsNullOrEmpty() && value.GameName.StartsWith(_settings.EntUsername))
                     {
                         _currentlyBeingHosted = true;
                     }
