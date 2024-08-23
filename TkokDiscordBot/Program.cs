@@ -26,11 +26,11 @@ namespace TkokDiscordBot
 
             //Setup DI container
             var builder = new ContainerBuilder();
-            builder.RegisterType<PasteBinItemsLoader>().As<IItemsLoader>(); //PasteBinItemsLoader|LocalFileItemsLoader
+            builder.RegisterType<PasteBinItemsLoader>().As<IItemsLoader>().InstancePerDependency(); //PasteBinItemsLoader|LocalFileItemsLoader
             builder.RegisterType<ItemsStore>().As<IItemsStore>().SingleInstance();
-            builder.RegisterType<ItemsRepository>().As<IItemsRepository>();
-            builder.RegisterType<Bot>().AsSelf();
+            builder.RegisterType<ItemsRepository>().As<IItemsRepository>().InstancePerDependency();
             builder.RegisterType<EntClient>().AsSelf().SingleInstance();
+            builder.RegisterType<Bot>().AsSelf().SingleInstance();
 
             builder.RegisterCommands(Assembly.GetAssembly(typeof(IBotCommand)));
 

@@ -32,6 +32,7 @@ namespace TkokDiscordBot.EntGaming
 
         public EntClient(ISettings settings)
         {
+            Console.WriteLine(Guid.NewGuid() + "XXX");
             _settings = settings;
             _cookieContainer = new CookieContainer();
 

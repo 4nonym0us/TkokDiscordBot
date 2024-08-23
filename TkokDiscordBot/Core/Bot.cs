@@ -11,8 +11,11 @@ using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Net.WebSocket;
 using TkokDiscordBot.Configuration;
+using TkokDiscordBot.Core.Commands;
 using TkokDiscordBot.Core.Commands.Abstractions;
 using TkokDiscordBot.Core.Commands.Attributes;
+using TkokDiscordBot.Core.CommandsNext;
+using TkokDiscordBot.Data.Abstractions;
 using TkokDiscordBot.EntGaming;
 
 namespace TkokDiscordBot.Core
@@ -23,18 +26,27 @@ namespace TkokDiscordBot.Core
 
         private readonly List<IBotCommand> _botCommands;
         private readonly EntClient _entClient;
+        private readonly IItemsRepository _itemsRepository;
+        private readonly IEnumerable<ICommandNext> _commandsNext;
         private readonly ISettings _settings;
         private DiscordChannel _mainChannel;
 
         public DiscordClient Client { get; set; }
         public CommandsNextModule Commands { get; set; }
 
-        public Bot(IEnumerable<IBotCommand> commands, ISettings settings, EntClient entClient)
+        public Bot(
+            IEnumerable<IBotCommand> commands,
+            IEnumerable<ICommandNext> commandsNext,
+            ISettings settings,
+            EntClient entClient,
+            IItemsRepository itemsRepository)
         {
             _botCommands = commands.OrderBy(c => (short?)c.GetType().GetAttribute<PriorityAttribute>()?.Priority ?? 0)
                 .ToList();
+            _commandsNext = commandsNext;
             _settings = settings;
             _entClient = entClient;
+            _itemsRepository = itemsRepository;
             _entClient.GameInfoChanged += EntClientOnGameInfoChanged;
 
             InitializeDiscordClient();
@@ -59,8 +71,22 @@ namespace TkokDiscordBot.Core
             Client.GuildAvailable += OnGuildAvailable;
             Client.ClientErrored += OnClientErrored;
 
-            var commandsNextConfig = new CommandsNextConfiguration();
+            //TODO: find a non-retarded way to make Autofac handle CommandsNext DI
+            var dependencyCollectionBuilder = new DependencyCollectionBuilder();
+            dependencyCollectionBuilder.AddInstance(_settings);
+            dependencyCollectionBuilder.AddInstance(_entClient);
+            dependencyCollectionBuilder.AddInstance(_itemsRepository);
+
+            var commandsNextConfig = new CommandsNextConfiguration
+            {
+                StringPrefix = "!",
+                Dependencies = dependencyCollectionBuilder.Build(),
+                EnableDefaultHelp = false
+            };
             Commands = Client.UseCommandsNext(commandsNextConfig);
+            Commands.RegisterCommands<PingCommand>();
+            Commands.RegisterCommands<TrackCommand>();
+            Commands.RegisterCommands<GameHostingCommand>();
 
             Client.DebugLogger.LogMessage(LogLevel.Info, nameof(Bot), "Initializing Ready", DateTime.Now);
 
@@ -134,7 +160,14 @@ namespace TkokDiscordBot.Core
             if (Regex.IsMatch(e.Message.Content.Trim(), @"^!(help|commands|cmds|cmd|h|\?)$"))
             {
                 var builder = new DiscordEmbedBuilder();
+                builder.WithColor(DiscordColor.Azure);
                 foreach (var command in _botCommands)
+                {
+                    var usage = command.GetUsage();
+                    if (usage != null)
+                        builder.AddField(usage.Command, usage.Usage);
+                }
+                foreach (var command in _commandsNext)
                 {
                     var usage = command.GetUsage();
                     if (usage != null)
