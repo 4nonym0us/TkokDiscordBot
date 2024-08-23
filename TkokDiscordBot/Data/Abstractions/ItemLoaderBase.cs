@@ -33,16 +33,19 @@ namespace TkokDiscordBot.Data.Abstractions
                     var itemRegex = _itemHeaderRegex.Match(currentLine);
                     if (itemRegex.Success)
                     {
-                        currentItem = new Item();
-                        currentItem.ObtainableFrom = obtainableFrom;
-                        currentItem.Name = itemRegex.Result("$1");
-                        currentItem.Description = itemRegex.Result("$2");
-                        currentItem.Slot = itemRegex.Result("$3").Trim().ToSentenseCase();
-                        currentItem.Type = itemRegex.Result("$4").Trim().ToSentenseCase();
+                        currentItem = new Item
+                        {
+                            ObtainableFrom = obtainableFrom,
+                            Name = itemRegex.Result("$1"),
+                            Description = itemRegex.Result("$2"),
+                            Slot = itemRegex.Result("$3").Trim().ToSentenceCase(),
+                            Type = itemRegex.Result("$4").Trim().ToSentenceCase()
+                        };
+
                         var lvl = itemRegex.Result("$5").Trim();
                         if (!string.IsNullOrEmpty(lvl))
                             currentItem.Level = short.Parse(lvl);
-                        currentItem.Quality = itemRegex.Result("$6").Trim().ToSentenseCase();
+                        currentItem.Quality = itemRegex.Result("$6").Trim().ToSentenceCase();
                     }
                 }
                 else if (currentItem != null)
@@ -69,18 +72,21 @@ namespace TkokDiscordBot.Data.Abstractions
                     else if (currentLine.StartsWith("CLASS RESTRICTION")) //CLASS RESTRICTION property
                     {
                         var cursorSplit = currentLine.Split(',');
-                        var key = cursorSplit[0].ToSentenseCase();
-                        var value = cursorSplit[1].ToSentenseCase();
-
-                        currentItem.Properties.Add(key, value);
+                        if (cursorSplit.Length >= 2)
+                        {
+                            currentItem.ClassRestriction = cursorSplit[1].Trim();
+                        }
                     }
                     else if (Regex.IsMatch(currentLine, @"^\b[A-Z\s]+")) //line starts with other BOLD ITEM PROPERTY
                     {
                         var cursorSplit = currentLine.Split(',');
-                        var key = cursorSplit[0].ToSentenseCase();
-                        var value = cursorSplit[1].ToSentenseCase();
+                        var key = cursorSplit[0].ToSentenceCase();
+                        var value = cursorSplit[1];
 
-                        currentItem.Properties.Add(key, value);
+                        if (double.TryParse(value, out var decimalValue))
+                        {
+                            currentItem.Properties.Add(key, decimalValue);
+                        }
                     }
                     else if (string.IsNullOrWhiteSpace(currentLine)) //save current item
                     {

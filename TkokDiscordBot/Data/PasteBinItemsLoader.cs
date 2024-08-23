@@ -11,13 +11,11 @@ namespace TkokDiscordBot.Data
     {
         public override async Task<IEnumerable<Item>> Load()
         {
-            using (var client = new HttpClient())
-            {
-                var response = await client.GetStringAsync("https://pastebin.com/raw/93Q7pjQJ");
-                var fileLines = Regex.Split(response, "\r\n|\r|\n");
+            using var client = new HttpClient();
+            var response = await client.GetStringAsync("https://pastebin.com/raw/93Q7pjQJ");
+            var fileLines = Regex.Split(response, "\r\n|\r|\n");
 
-                return ParseLines(fileLines);
-            }
+            return ParseLines(fileLines);
         }
     }
 }

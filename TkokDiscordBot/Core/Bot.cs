@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -10,14 +9,11 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
-using DSharpPlus.Net.WebSocket;
 using TkokDiscordBot.Configuration;
-using TkokDiscordBot.Core.Commands;
 using TkokDiscordBot.Core.Commands.Abstractions;
 using TkokDiscordBot.Core.Commands.Attributes;
 using TkokDiscordBot.Core.CommandsNext;
 using TkokDiscordBot.Data.Abstractions;
-using TkokDiscordBot.EntGaming;
 
 namespace TkokDiscordBot.Core
 {
@@ -25,7 +21,6 @@ namespace TkokDiscordBot.Core
     {
         private readonly List<IBotCommand> _botCommands;
         private readonly IEnumerable<ICommandNext> _commandsNext;
-        private readonly EntClient _entClient;
         private readonly IItemsRepository _itemsRepository;
         private readonly IItemsStore _itemsStore;
         private readonly ISettings _settings;
@@ -36,17 +31,14 @@ namespace TkokDiscordBot.Core
             IEnumerable<IBotCommand> commands,
             IEnumerable<ICommandNext> commandsNext,
             ISettings settings,
-            EntClient entClient,
             IItemsRepository itemsRepository,
             IItemsStore itemsStore)
         {
             _botCommands = commands.OrderBy(c => (short?)c.GetType().GetAttribute<PriorityAttribute>()?.Priority ?? 0).ToList();
             _commandsNext = commandsNext;
             _settings = settings;
-            _entClient = entClient;
             _itemsRepository = itemsRepository;
             _itemsStore = itemsStore;
-            _entClient.GameInfoChanged += EntClientOnGameInfoChanged;
 
             InitializeDiscordClient();
             InitializeCommandsNext();
@@ -71,7 +63,8 @@ namespace TkokDiscordBot.Core
                 UseInternalLogHandler = true
             });
 
-            Client.SetWebSocketClient<WebSocket4NetClient>();
+
+            //Client.SetWebSocketClient<WebSocket4NetClient>();
 
             Client.MessageCreated += OnMessageCreated;
             Client.GuildMemberAdded += OnGuildMemberAdded;
@@ -88,7 +81,6 @@ namespace TkokDiscordBot.Core
             //TODO: find a non-retarded way to make Autofac handle CommandsNext DI
             var dependencyCollectionBuilder = new DependencyCollectionBuilder();
             dependencyCollectionBuilder.AddInstance(_settings);
-            dependencyCollectionBuilder.AddInstance(_entClient);
             dependencyCollectionBuilder.AddInstance(_itemsRepository);
             dependencyCollectionBuilder.AddInstance(_itemsStore);
 
@@ -104,8 +96,6 @@ namespace TkokDiscordBot.Core
                 
             }
             Commands.RegisterCommands<PingCommand>();
-            Commands.RegisterCommands<TrackCommand>();
-            Commands.RegisterCommands<GameHostingCommand>();
             Commands.RegisterCommands<AdministrationCommands>();
             Commands.RegisterCommands<FullTextSearchItemsCommand>();
             Commands.RegisterCommands<PollCommand>();
@@ -128,18 +118,6 @@ namespace TkokDiscordBot.Core
         #endregion
 
         #region Discord Client Event Handlers
-
-        private async void EntClientOnGameInfoChanged(object sender, PropertyChangedEventArgs eventArgs)
-        {
-            if (eventArgs.PropertyName != nameof(EntClient.GameInfo)) return;
-
-            var lobbyInfo = _entClient.GameInfo;
-
-            if (lobbyInfo != null)
-                await _mainChannel.ModifyAsync("main", null, "Currently hosting: " + lobbyInfo);
-            else
-                await _mainChannel.ModifyAsync("main", null, _defaultMainChannelTopic);
-        }
 
         private Task OnClientErrored(ClientErrorEventArgs e)
         {

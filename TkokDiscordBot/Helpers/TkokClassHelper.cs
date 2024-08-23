@@ -8,11 +8,11 @@ namespace TkokDiscordBot.Helpers
 {
     public static class TkokClassHelper
     {
-        private static readonly Dictionary<TkokClass, string[]> EquipableItemsDict;
+        private static readonly Dictionary<TkokClass, string[]> EquippableItemsDict;
 
         static TkokClassHelper()
         {
-            EquipableItemsDict = new Dictionary<TkokClass, string[]>
+            EquippableItemsDict = new Dictionary<TkokClass, string[]>
             {
                 {TkokClass.Arcanist, new[] {"Mithril", "Cloth", "Staff", "Book", "Wand", "Orb"}},
                 {TkokClass.Hydromancer, new[] {"Mithril", "Cloth", "Staff", "Book", "Wand", "Orb"}},
@@ -40,7 +40,7 @@ namespace TkokDiscordBot.Helpers
             if (@class == TkokClass.None)
                 return null;
 
-            var itemTypes = EquipableItemsDict[@class];
+            var itemTypes = EquippableItemsDict[@class];
             Func<Item, bool> classFilterPredicate;
 
             if (@class == TkokClass.Warrior)
