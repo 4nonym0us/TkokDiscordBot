@@ -30,7 +30,7 @@ namespace TkokDiscordBot.Core.Commands
 
             var message = eventArgs.Message.Content;
 
-            var commandRegex = new Regex(@"(?:^|\s)([a-z0-9]{3,32}.\d{2})(?:\s|$)").Match(message.Trim());
+            var commandRegex = new Regex(@"(?:^|\s)([a-z0-9]{3,32}\d{2})(?:\s|$)").Match(message.Trim());
             if (!commandRegex.Success)
             {
                 return false;
