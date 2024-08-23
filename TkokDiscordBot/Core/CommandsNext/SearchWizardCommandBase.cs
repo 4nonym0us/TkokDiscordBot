@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Castle.Core.Internal;
@@ -95,17 +97,22 @@ public abstract class SearchWizardCommandBase : BaseCommandModule
         }
 
         // Build the query
-        var searchPhrases = filters.Where(f => !f.SelectedOptions.IsNullOrEmpty()).Select(f => f.SelectedOptions).ToList();
+        //var searchPhrases = filters.Where(f => !f.SelectedOptions.IsNullOrEmpty()).Select(f => f.SelectedOptions).ToList();
+        var queryGroups = filters.Where(f => !f.SelectedOptions.IsNullOrEmpty())
+            .Select(f => f.BuildSearchTerm())
+            .ToList();
 
-        if (searchPhrases.IsNullOrEmpty())
+        if (queryGroups.IsNullOrEmpty())
         {
             await context.RespondAsync($" {DiscordServerEmojis.Think} You need to select at least one filter.");
             return null;
         }
 
         // Join terms of same kind with `OR`. Then join different categories with `AND`.
-        var queryParts = searchPhrases.Select(searchPhrase => string.Join(" OR ", searchPhrase)).ToList();
-        var finalQuery = queryParts.Count > 1 ? $"({string.Join(") AND (", queryParts)})" : queryParts.Single();
+        var finalQuery = queryGroups.Count > 1
+            ? string.Join(" AND ", queryGroups)
+            : queryGroups.Single();
+
         return finalQuery;
     }
 
@@ -120,14 +127,37 @@ public abstract class SearchWizardCommandBase : BaseCommandModule
     protected async Task SearchAndRespondAsync(CommandContext context, string query, bool displayQuery)
     {
         var items = _fullTextSearch.Search(query);
+
         if (!items.Any())
         {
-            await context.RespondAsync($" {DiscordServerEmojis.MonkaS} There are no matching items.");
+            var hasNeckOrRingFilter = Regex.IsMatch(query, @"slot:.*?(Neck|Ring)|type:.*?Accessory", RegexOptions.IgnoreCase);
+            var hasClassFilter = Regex.IsMatch(query, @"class:", RegexOptions.IgnoreCase);
+
+            var errorResponseBuilder = new StringBuilder($" {DiscordServerEmojis.MonkaS} There are no matching items");
+
+            if (displayQuery)
+            {
+                errorResponseBuilder.Append($" (query: `{query}`).");
+            }
+
+            if (hasNeckOrRingFilter && hasClassFilter)
+            {
+                errorResponseBuilder.AppendLine(
+                    "\r\n :warning: **Warning**: Remove `Class` filter to search for `Accessories`. Accessories (`Rings` and `Necklaces`) " +
+                    "are shared among  all classes and their filter is suppressed by `Class` filter. ");
+            }
+
+            await context.RespondAsync(errorResponseBuilder.ToString());
             return;
         }
 
-        var header = displayQuery ? $"Found {items.Count} items. Query: `{query}`." : $"Found {items.Count} items.";
-        var messagePages = _pageGenerator.ToPages(items, header);
+        var headerBuilder = new StringBuilder($"Found {items.Count} {(items.Count > 1 ? "items" : "item")}.");
+        if (displayQuery)
+        {
+            headerBuilder.Append($" Query: `{query}`.");
+        }
+
+        var messagePages = _pageGenerator.ToPages(items, headerBuilder.ToString());
         if (messagePages.Count > 1)
         {
             var interactivity = context.Client.GetInteractivity();
