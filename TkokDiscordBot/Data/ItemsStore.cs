@@ -22,7 +22,7 @@ namespace TkokDiscordBot.Data
             {
                 await ReSyncItems();
             }
-            return _items;
+            return _items.OrderBy(i => i.Level).ThenBy(i => i.Name);
         }
 
         public async Task ReSyncItems()
