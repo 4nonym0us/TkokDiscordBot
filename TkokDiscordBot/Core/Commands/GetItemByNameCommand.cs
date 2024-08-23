@@ -41,6 +41,7 @@ namespace TkokDiscordBot.Core.Commands
             }
 
             var builder = new DiscordEmbedBuilder();
+            builder.WithColor(DiscordColor.Green);
 
             if (string.IsNullOrWhiteSpace(item.Description))
             {

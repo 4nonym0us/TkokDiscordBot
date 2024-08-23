@@ -65,11 +65,10 @@ namespace TkokDiscordBot.Data
         public async Task<IEnumerable<Item>> FullTextSearch(string filter, int? level, TkokClass @class)
         {
             var query = (await _itemsStore.GetAllAsync()).AsQueryable();
-            IQueryable<Item> foundItems = new EnumerableQuery<Item>(Expression.Empty());
 
             if (!string.IsNullOrWhiteSpace(filter))
             {
-                foundItems = query.Where(item =>
+                query = query.Where(item =>
                     item.Name.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0 ||
                     item.Slot.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0 ||
                     item.Type.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0 ||
@@ -77,10 +76,10 @@ namespace TkokDiscordBot.Data
                     item.ObtainableFrom.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0);
             }
 
-            foundItems = foundItems.WhereIf(level.HasValue, item => item.Level == level.Value);
-            foundItems = foundItems.WhereIf(@class != TkokClass.None, item => TkokClassHelper.GetPredicateForItemLookup(@class).Invoke(item));
+            query = query.WhereIf(level.HasValue, item => item.Level == level.Value);
+            query = query.WhereIf(@class != TkokClass.None, item => TkokClassHelper.GetPredicateForItemLookup(@class).Invoke(item));
 
-            return foundItems;
+            return query;
         }
     }
 }
