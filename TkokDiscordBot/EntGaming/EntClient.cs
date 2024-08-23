@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Castle.Core.Internal;
 using TkokDiscordBot.Configuration;
 using TkokDiscordBot.EntGaming.Dto;
 
@@ -29,6 +30,7 @@ namespace TkokDiscordBot.EntGaming
         private readonly Regex _gameNameRegex = new Regex(@"<b>GAMENAME: (\S+)</b>", RegexOptions.Compiled);
         private readonly ISettings _settings;
         private LobbyStatus _gameInfo;
+        private bool _currentlyBeingHosted;
 
         public EntClient(ISettings settings)
         {
@@ -52,6 +54,10 @@ namespace TkokDiscordBot.EntGaming
                 {
                     _gameInfo = value;
                     OnPropertyChanged(nameof(GameInfo));
+                    if (!_gameInfo.GameName.IsNullOrEmpty() && _gameInfo.GameName.StartsWith(_settings.EntUsername))
+                    {
+                        _currentlyBeingHosted = true;
+                    }
                 }
             }
         }
@@ -174,9 +180,18 @@ namespace TkokDiscordBot.EntGaming
 
                 if (gameDataStr == null)
                 {
+                    //Don't reset the GameInfo - game will be created soon
+                    if (_currentlyBeingHosted)
+                    {
+                        return;
+                    }
+
                     GameInfo = null;
                     return;
                 }
+
+                //Game was hosted
+                _currentlyBeingHosted = false;
 
                 var gameData = gameDataStr.Split('|');
                 GameInfo = new LobbyStatus(

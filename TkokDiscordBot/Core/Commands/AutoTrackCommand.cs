@@ -1,7 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using DSharpPlus;
-using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.EventArgs;
 using TkokDiscordBot.Core.Commands.Abstractions;
 using TkokDiscordBot.Core.Commands.Attributes;
