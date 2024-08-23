@@ -30,6 +30,12 @@ namespace TkokDiscordBot.Data
             return query.FirstOrDefault(item => item.Name == name);
         }
 
+        public async Task<Item> FirstOrDefault(Func<Item, bool> predicate)
+        {
+            var query = await _itemsStore.GetAllAsync();
+            return query.FirstOrDefault(predicate);
+        }
+
         public async Task<IEnumerable<Item>> Search(string name = null, string slot = null, string type = null, string quality = null, int? level = null, string boss = null)
         {
             var query = await _itemsStore.GetAllAsync();
