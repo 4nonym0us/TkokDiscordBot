@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using TkokDiscordBot.Data.Abstractions;
 using TkokDiscordBot.Entities;
 using TkokDiscordBot.Enums;
+using TkokDiscordBot.Extensions;
 using TkokDiscordBot.Helpers;
 
 namespace TkokDiscordBot.Data
@@ -38,70 +40,47 @@ namespace TkokDiscordBot.Data
 
         public async Task<IEnumerable<Item>> Search(string name = null, string slot = null, string type = null, string quality = null, int? level = null, string boss = null)
         {
-            var query = await _itemsStore.GetAllAsync();
+            var query = (await _itemsStore.GetAllAsync()).AsQueryable();
 
-            if (!string.IsNullOrWhiteSpace(name))
-            {
-                query = query.Where(item => item.Name.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0);
-            }
+            query = query.WhereIf(!string.IsNullOrWhiteSpace(name),
+                item => item.Name.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0);
 
-            if (!string.IsNullOrWhiteSpace(slot))
-            {
-                query = query.Where(item => item.Slot.IndexOf(slot, StringComparison.OrdinalIgnoreCase) >= 0);
-            }
+            query = query.WhereIf(!string.IsNullOrWhiteSpace(slot),
+                item => item.Slot.IndexOf(slot, StringComparison.OrdinalIgnoreCase) >= 0);
 
-            if (!string.IsNullOrWhiteSpace(type))
-            {
-                query = query.Where(item => item.Type.IndexOf(type, StringComparison.OrdinalIgnoreCase) >= 0);
-            }
+            query = query.WhereIf(!string.IsNullOrWhiteSpace(type),
+                item => item.Type.IndexOf(type, StringComparison.OrdinalIgnoreCase) >= 0);
 
-            if (!string.IsNullOrWhiteSpace(quality))
-            {
-                query = query.Where(item => item.Quality.IndexOf(quality, StringComparison.OrdinalIgnoreCase) >= 0);
-            }
+            query = query.WhereIf(!string.IsNullOrWhiteSpace(quality),
+                item => item.Quality.IndexOf(quality, StringComparison.OrdinalIgnoreCase) >= 0);
 
-            if (level.HasValue)
-            {
-                query = query.Where(item => item.Level == level.Value);
-            }
+            query = query.WhereIf(!string.IsNullOrWhiteSpace(boss),
+                item => item.ObtainableFrom.IndexOf(boss, StringComparison.OrdinalIgnoreCase) >= 0);
 
-            if (!string.IsNullOrWhiteSpace(boss))
-            {
-                query = query.Where(item => item.ObtainableFrom.IndexOf(boss, StringComparison.OrdinalIgnoreCase) >= 0);
-            }
+            query = query.WhereIf(level.HasValue, item => item.Level == level.Value);
 
             return query;
         }
 
         public async Task<IEnumerable<Item>> FullTextSearch(string filter, int? level, TkokClass @class)
         {
-            var query = await _itemsStore.GetAllAsync();
+            var query = (await _itemsStore.GetAllAsync()).AsQueryable();
+            IQueryable<Item> foundItems = new EnumerableQuery<Item>(Expression.Empty());
 
             if (!string.IsNullOrWhiteSpace(filter))
             {
-                query = query.Where(item => item.Name.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                foundItems = query.Where(item =>
+                    item.Name.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0 ||
                     item.Slot.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0 ||
                     item.Type.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0 ||
                     item.Quality.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                    item.ObtainableFrom.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0
-                    //filter.IndexOf(item.Slot, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                    //filter.IndexOf(item.Type, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                    //filter.IndexOf(item.Quality, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                    //filter.IndexOf(item.ObtainableFrom, StringComparison.OrdinalIgnoreCase) >= 0
-                    );
+                    item.ObtainableFrom.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0);
             }
 
-            if (level.HasValue)
-            {
-                query = query.Where(item => item.Level == level.Value);
-            }
+            foundItems = foundItems.WhereIf(level.HasValue, item => item.Level == level.Value);
+            foundItems = foundItems.WhereIf(@class != TkokClass.None, item => TkokClassHelper.GetPredicateForItemLookup(@class).Invoke(item));
 
-            if (@class != TkokClass.None)
-            {
-                query = query.Where(TkokClassHelper.GetPredicateForItemLookup(@class));
-            }
-
-            return query;
+            return foundItems;
         }
     }
 }
