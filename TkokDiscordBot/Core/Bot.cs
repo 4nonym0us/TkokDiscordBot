@@ -49,6 +49,7 @@ namespace TkokDiscordBot.Core
                 LogLevel = LogLevel.Info,
                 UseInternalLogHandler = true
             });
+
             Client.SetWebSocketClient<WebSocket4NetClient>();
 
             Client.DebugLogger.LogMessage(LogLevel.Info, nameof(Bot), "Initializing events", DateTime.Now);
@@ -64,6 +65,7 @@ namespace TkokDiscordBot.Core
             Client.DebugLogger.LogMessage(LogLevel.Info, nameof(Bot), "Initializing Ready", DateTime.Now);
 
             Client.Ready += OnReady;
+
         }
 
         #region Discord Client Event Handlers

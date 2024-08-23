@@ -13,7 +13,6 @@ using TkokDiscordBot.Enums;
 namespace TkokDiscordBot.Core.Commands
 {
     [Priority(CommandPriority.Low)]
-    [Cooldown(3, 60, CooldownBucketType.User)]
     internal class AutoTrackCommand : IBotCommand
     {
         private readonly EntClient _entClient;
