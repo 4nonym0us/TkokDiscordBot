@@ -3,71 +3,66 @@ using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using JetBrains.Annotations;
 using TkokDiscordBot.Configuration;
-using TkokDiscordBot.Core.Commands.Abstractions;
 using TkokDiscordBot.Core.Commands.Dto;
 using TkokDiscordBot.Data.Abstractions;
 
-namespace TkokDiscordBot.Core.CommandsNext
+namespace TkokDiscordBot.Core.CommandsNext;
+
+[Hidden]
+[Group("admin")]
+[UsedImplicitly]
+[RequirePermissions(Permissions.ManageChannels)]
+public class AdministrationHasCommands : BaseCommandModule
 {
-    [Hidden]
-    [Group("admin", CanInvokeWithoutSubcommand = false)]
-    [RequirePermissions(Permissions.ManageChannels)]
-    internal class AdministrationCommands : ICommandNext
+    private readonly ISettings _settings;
+    private readonly IItemsStore _itemsStore;
+
+    public AdministrationHasCommands(ISettings settings, IItemsStore itemsStore)
     {
-        private readonly ISettings _settings;
-        private readonly IItemsStore _itemsStore;
+        _settings = settings;
+        _itemsStore = itemsStore;
+    }
 
-        public AdministrationCommands(ISettings settings, IItemsStore itemsStore)
+    [Command("set")]
+    public async Task Set(CommandContext context, string key, string value)
+    {
+        if (!context.Channel.IsPrivate)
         {
-            _settings = settings;
-            _itemsStore = itemsStore;
+            await context.Message.RespondAsync("Current command is available only in Private channel.");
+            return;
         }
 
-        [Command("set")]
-        public async Task Set(CommandContext context, string key, string value)
+        var configProperty = _settings.GetType().GetProperty(key);
+        if (configProperty == null)
         {
-            if (!context.Channel.IsPrivate)
-            {
-                await context.Message.RespondAsync("Current command is available only in Private channel.");
-                return;
-            }
-
-            var configProperty = _settings.GetType().GetProperty(key);
-            if (configProperty == null)
-            {
-                await context.Message.RespondAsync($"Invalid key `{key}`.");
-                return;
-            }
-
-            configProperty.SetValue(_settings, value, null);
-            await context.Message.RespondAsync($"Successfully set `{configProperty.Name}`=`{value}`.");
+            await context.Message.RespondAsync($"Invalid key `{key}`.");
+            return;
         }
 
-        [Command("debug")]
-        public async Task Debug(CommandContext context)
-        {
-            if (!context.Channel.IsPrivate)
-            {
-                await context.Message.RespondAsync("Current command is available only in Private channel.");
-                return;
-            }
+        configProperty.SetValue(_settings, value, null);
+        await context.Message.RespondAsync($"Successfully set `{configProperty.Name}`=`{value}`.");
+    }
 
-            var debugInfo = $"DiscordBotAdmins: {_settings.DiscordBotAdmins}";
-            await context.RespondAsync($"```{debugInfo}```");
-        }
+    [Command("sync-items")]
+    public async Task SyncItems(CommandContext context)
+    {
+        await _itemsStore.ReloadItemsAsync();
+        var allItems = (await _itemsStore.GetAllAsync()).Count();
+        await context.RespondAsync($"Items are reloaded. Total items in storage: {allItems}");
 
-        [Command("sync-items")]
-        public async Task SyncItems(CommandContext context)
-        {
-            await _itemsStore.ReSyncItems();
-            var allItems = (await _itemsStore.GetAllAsync()).Count();
-            await context.RespondAsync($"Items are reloaded. Total items in storage: {allItems}");
-        }
+        var items = await _itemsStore.GetAllAsync();
 
-        public CommandInfo GetUsage()
-        {
-            return null;
-        }
+        await context.RespondAsync(string.Join(",", items.Select(i => i.Slot).Distinct()));
+        await context.RespondAsync(string.Join(",", items.Select(i => i.Type).Distinct()));
+        await context.RespondAsync(string.Join(",", items.Select(i => i.Quality).Distinct()));
+        await context.RespondAsync(string.Join(",", items.Select(i => i.ObtainableFrom).Distinct()));
+        await context.RespondAsync(string.Join(",", items.Select(i => i.ClassRestriction).Distinct()));
+    }
+
+    public CommandInfo GetUsage()
+    {
+        return null;
     }
 }

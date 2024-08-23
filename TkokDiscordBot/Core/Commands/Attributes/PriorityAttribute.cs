@@ -1,19 +1,18 @@
 ﻿using System;
 using TkokDiscordBot.Enums;
 
-namespace TkokDiscordBot.Core.Commands.Attributes
-{
-    [AttributeUsage(AttributeTargets.Class)]
-    public class PriorityAttribute : Attribute
-    {
-        /// <summary>
-        /// Priority for command handling. Highest prio command handler gets executed first. Default: Medium
-        /// </summary>
-        public CommandPriority Priority { get; set; }
+namespace TkokDiscordBot.Core.Commands.Attributes;
 
-        public PriorityAttribute(CommandPriority priority)
-        {
-            Priority = priority;
-        }
+[AttributeUsage(AttributeTargets.Class)]
+public class PriorityAttribute : Attribute
+{
+    /// <summary>
+    /// Priority for command handling. Highest prio command handler gets executed first. Default: Medium
+    /// </summary>
+    public CommandPriority Priority { get; set; }
+
+    public PriorityAttribute(CommandPriority priority)
+    {
+        Priority = priority;
     }
 }

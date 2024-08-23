@@ -1,9 +1,8 @@
-namespace TkokDiscordBot.Enums
+namespace TkokDiscordBot.Enums;
+
+public enum CommandPriority : short
 {
-    public enum CommandPriority : short
-    {
-        High = -1,
-        Medium = 0,
-        Low = 1
-    }
+    High = -1,
+    Medium = 0,
+    Low = 1
 }

@@ -2,12 +2,11 @@
 using System.Threading.Tasks;
 using TkokDiscordBot.Entities;
 
-namespace TkokDiscordBot.Data.Abstractions
-{
-    public interface IItemsStore
-    {
-        Task<IEnumerable<Item>> GetAllAsync();
+namespace TkokDiscordBot.Data.Abstractions;
 
-        Task ReSyncItems();
-    }
+public interface IItemsStore
+{
+    Task<IReadOnlyCollection<Item>> GetAllAsync();
+
+    Task ReloadItemsAsync();
 }

@@ -4,19 +4,18 @@ using System.Threading.Tasks;
 using TkokDiscordBot.Data.Abstractions;
 using TkokDiscordBot.Entities;
 
-namespace TkokDiscordBot.Data
-{
-    public class LocalFileItemsLoader : ItemLoaderBase
-    {
-        /// <summary>
-        /// Loads items from `droplist.txt`.
-        /// </summary>
-        /// <returns></returns>
-        public override Task<IEnumerable<Item>> Load()
-        {
-            var fileData = File.ReadAllLines(@"droplist.txt");
+namespace TkokDiscordBot.Data;
 
-            return Task.FromResult(ParseLines(fileData));
-        }
+public class LocalFileItemsLoader : ItemLoaderBase
+{
+    /// <summary>
+    /// Loads items from `droplist.txt`.
+    /// </summary>
+    /// <returns></returns>
+    public override async Task<IEnumerable<Item>> LoadAsync()
+    {
+        var fileData = await File.ReadAllLinesAsync(@"droplist.txt");
+
+        return ParseLines(fileData);
     }
 }
