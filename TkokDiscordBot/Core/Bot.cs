@@ -47,9 +47,6 @@ namespace TkokDiscordBot.Core
             _itemsStore = itemsStore;
             _entClient.GameInfoChanged += EntClientOnGameInfoChanged;
 
-
-            Client.DebugLogger.LogMessage(LogLevel.Info, nameof(Bot), "Initializing...", DateTime.Now);
-
             InitializeDiscordClient();
             InitializeCommandsNext();
             InitializeInteractivity();
