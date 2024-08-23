@@ -1,6 +1,6 @@
 ﻿using System.Linq;
-using System.Text.RegularExpressions;
 using Lucene.Net.Documents;
+using Lucene.Net.Documents.Extensions;
 using TkokDiscordBot.Entities;
 using TkokDiscordBot.Helpers;
 
@@ -29,24 +29,30 @@ public static class ItemExtensions
     /// <returns></returns>
     public static Document ToDocument(this Item item)
     {
-        var usersOfAnItem = TkokClassHelper.GetUsersOfItem(item).Select(TkokClassHelper.GetClassName);
-
-        var normalizedItemSource = Regex.Replace(item.ObtainableFrom, @"\s*?\[.*?\]\s*?", string.Empty);
+        var normalizedItemSource = item.NormalizedObtainableFrom;
         if (item.ObtainableFrom.Contains("Empowered")) { normalizedItemSource += " Empowered"; }
         if (item.ObtainableFrom.Contains("Champion")) { normalizedItemSource += " Champion"; }
 
-        return new Document
+        var doc = new Document
         {
             new Int32Field("id", item.Id, Field.Store.YES),
             new TextField("name", item.Name, Field.Store.YES),
             new TextField("slot", item.Slot, Field.Store.YES),
             new TextField("type", item.Type, Field.Store.YES),
             new TextField("quality", item.Quality, Field.Store.YES),
-            new TextField("obtainableFrom", normalizedItemSource, Field.Store.YES),
+            new TextField("source", normalizedItemSource, Field.Store.YES),
             new TextField("level", item.Level.ToString(), Field.Store.YES),
-            new TextField("supportedClasses", string.Join(", ", usersOfAnItem), Field.Store.YES),
             new TextField("description", item.Description, Field.Store.YES),
             new TextField("special", item.Special ?? string.Empty, Field.Store.YES)
         };
+
+        var usersOfAnItem = TkokClassHelper.GetUsersOfItem(item).Select(TkokClassHelper.GetClassName);
+
+        foreach (var className in usersOfAnItem)
+        {
+            doc.AddTextField("class", string.Join(", ", className), Field.Store.YES);
+        }
+
+        return doc;
     }
 }

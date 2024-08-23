@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using Lucene.Net.QueryParsers.Classic;
+using System.Text.RegularExpressions;
 
 namespace TkokDiscordBot.Extensions;
 
@@ -41,6 +42,19 @@ public static class StringExtensions
     /// <returns></returns>
     public static string AsLuceneTerm(this string s)
     {
-        return s.Contains(' ') && !s.StartsWith('(') && !s.EndsWith(')') ? $"\"{s}\"" : s;
+        return s.Contains(' ') && !s.StartsWith('(') && !s.EndsWith(')')
+            ? $"\"{QueryParserBase.Escape(s)}\""
+            : QueryParserBase.Escape(s);
+    }
+
+    /// <summary>
+    /// Converts string to camel case.
+    /// Example: `SampleInput` => `sampleInput`
+    /// </summary>
+    /// <param name="s"></param>
+    /// <returns></returns>
+    public static string ToCamelCase(this string s)
+    {
+        return s[..1].ToLower() + s[1..];
     }
 }
