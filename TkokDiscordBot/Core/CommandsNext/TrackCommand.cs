@@ -1,15 +1,15 @@
 ﻿using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using DSharpPlus;
-using DSharpPlus.EventArgs;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
 using TkokDiscordBot.Core.Commands.Abstractions;
 using TkokDiscordBot.Core.Commands.Dto;
 using TkokDiscordBot.EntGaming;
 using TkokDiscordBot.EntGaming.Dto;
 
-namespace TkokDiscordBot.Core.Commands
+namespace TkokDiscordBot.Core.CommandsNext
 {
-    internal class TrackCommand : IBotCommand
+    internal class TrackCommand : ICommandNext
     {
         private readonly EntClient _entClient;
 
@@ -18,33 +18,30 @@ namespace TkokDiscordBot.Core.Commands
             _entClient = entClient;
         }
 
-        public async Task<bool> Handle(DiscordClient sender, MessageCreateEventArgs eventArgs)
+        [Command("track")]
+        public async Task Track(CommandContext ctx, string argument)
         {
-            var message = eventArgs.Message.Content;
-
-            var commandRegex = new Regex(@"^!track (.*?)$").Match(message.ToLower().Trim());
+            var commandRegex = new Regex(@"^(disable|[0-9A-Za-z-_]{3,32})$").Match(argument.Trim());
             if (!commandRegex.Success)
             {
-                return false;
+                return;
             }
 
-            var gameNameOrCommand = commandRegex.Result("$1").Trim();
+            var gameNameOrCommand = argument.Trim();
 
             if (!string.IsNullOrWhiteSpace(gameNameOrCommand))
             {
                 if (gameNameOrCommand == "disable")
                 {
                     _entClient.GameInfo = null;
-                    await eventArgs.Message.RespondAsync(":heavy_multiplication_x: Disabling game tracking.");
+                    await ctx.RespondAsync(":heavy_multiplication_x: Disabling game tracking.");
                 }
                 else
                 {
                     _entClient.GameInfo = new LobbyStatus(gameNameOrCommand);
-                    await eventArgs.Message.RespondAsync($":eye: Monitoring game `{gameNameOrCommand}`.");
+                    await ctx.RespondAsync($":eye: Monitoring game `{gameNameOrCommand}`.");
                 }
             }
-
-            return true;
         }
 
         public CommandInfo GetUsage()
