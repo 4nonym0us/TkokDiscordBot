@@ -21,7 +21,7 @@ namespace TkokDiscordBot.Core.Commands
         {
             var message = eventArgs.Message.Content;
 
-            var commandRegex = new Regex(@"^!host (\S+)\s?(atlanta|ny|la|europe|au|jp|sg)?$").Match(message.ToLower().Trim());
+            var commandRegex = new Regex(@"^!host ([0-9a-zA-Z-_]){3,32}\s?(atlanta|ny|la|europe|au|jp|sg)?$").Match(message.ToLower().Trim());
             if (!commandRegex.Success)
             {
                 return false;
