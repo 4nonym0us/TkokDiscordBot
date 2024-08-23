@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using DSharpPlus;
 using DSharpPlus.EventArgs;
 using TkokDiscordBot.Core.Commands.Abstractions;
 using TkokDiscordBot.Core.Commands.Attributes;
@@ -40,7 +41,7 @@ namespace TkokDiscordBot.Core.Commands
             return null;
         }
 
-        public async Task<bool> Handle(Bot sender, MessageCreateEventArgs eventArgs)
+        public async Task<bool> Handle(DiscordClient sender, MessageCreateEventArgs eventArgs)
         {
             var commandPrefixes = new []{ "!search " , "!s "};
             var message = eventArgs.Message.Content;

@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using TkokDiscordBot.Core.Commands.Abstractions;
@@ -18,7 +19,7 @@ namespace TkokDiscordBot.Core.Commands
             _repository = repository;
         }
 
-        public async Task<bool> Handle(Bot sender, MessageCreateEventArgs eventArgs)
+        public async Task<bool> Handle(DiscordClient sender, MessageCreateEventArgs eventArgs)
         {
             var message = eventArgs.Message.Content;
             if (!message.StartsWith("!"))

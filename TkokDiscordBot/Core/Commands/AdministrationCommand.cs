@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using DSharpPlus;
 using DSharpPlus.EventArgs;
 using TkokDiscordBot.Configuration;
 using TkokDiscordBot.Core.Commands.Abstractions;
@@ -19,7 +20,7 @@ namespace TkokDiscordBot.Core.Commands
             _itemsStore = itemsStore;
         }
 
-        public async Task<bool> Handle(Bot sender, MessageCreateEventArgs eventArgs)
+        public async Task<bool> Handle(DiscordClient sender, MessageCreateEventArgs eventArgs)
         {
             var commandPrefix = "!admin ";
             if (!eventArgs.Channel.IsPrivate || !eventArgs.Message.Content.StartsWith("!admin "))
