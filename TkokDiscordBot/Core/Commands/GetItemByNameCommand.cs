@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using DSharpPlus;
@@ -27,7 +28,12 @@ namespace TkokDiscordBot.Core.Commands
                 return false;
             }
 
-            var item = (await _repository.Search(message.TrimStart('!').Trim())).FirstOrDefault();
+            var filter = message.TrimStart('!').Trim();
+
+            //Try to get exact match first , partial match if first lookup fails
+            var item =
+                await _repository.FirstOrDefault(i => string.Equals(i.Name, filter, StringComparison.CurrentCultureIgnoreCase)) ??
+                (await _repository.Search(filter)).FirstOrDefault();
 
             if (item == null)
             {
