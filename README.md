@@ -11,7 +11,7 @@ Live demo is available on [TKoK Discord Server](https://discord.gg/ES2dwYC).
 
 ## Requirements
 
- * .NET 6
+ * .NET 10
  * Settings are stored in `user-secrets.json`, which should be located at executable's directory
 ```json
 {
