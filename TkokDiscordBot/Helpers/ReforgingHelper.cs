@@ -8,7 +8,7 @@ internal static class ReforgingHelper
 {
     private const double ReforgingMultiplier = 0.03334;
     private static readonly string[] PropertiesToTruncateOnReforge =
-    {
+    [
         "Power",
         "Agility",
         "Energy",
@@ -17,7 +17,7 @@ internal static class ReforgingHelper
         "Move speed",
         "Life",
         "Mana"
-    };
+    ];
 
     internal static void ReforgeProperties(Item item, short reforgeLevel)
     {

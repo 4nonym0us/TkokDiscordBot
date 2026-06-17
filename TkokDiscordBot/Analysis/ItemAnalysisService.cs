@@ -12,17 +12,17 @@ namespace TkokDiscordBot.Analysis;
 
 public class ItemAnalysisService : IItemAnalysisService
 {
-    public List<string> AvailableClasses { get; } = new();
+    public List<string> AvailableClasses { get; } = [];
 
-    public List<string> ItemSlots { get; } = new();
+    public List<string> ItemSlots { get; } = [];
 
-    public List<string> ItemTypes { get; } = new();
+    public List<string> ItemTypes { get; } = [];
 
-    public List<string> ItemSources { get; } = new();
+    public List<string> ItemSources { get; } = [];
 
-    public List<string> QualityLevels { get; } = new();
+    public List<string> QualityLevels { get; } = [];
 
-    public List<string> AvailableBosses { get; } = new();
+    public List<string> AvailableBosses { get; } = [];
 
     public ItemAnalysisService(IItemsStore itemsStore)
     {
@@ -67,12 +67,11 @@ public class ItemAnalysisService : IItemAnalysisService
 
         if (!AvailableBosses.Any())
         {
-            AvailableBosses.AddRange(new[]
-            {
+            AvailableBosses.AddRange([
                 "Broodmother", "Narith", "Sand Golem", "Naztar", "Karrix", "Avnos", "Karnos", "Karavnos", "Muarki",
                 "Vjaier", "Crueltis", "Tal'Navi", "M'Karsa", "Hydra", "Ortakna", "Crypt Fiend", "Ghoul",
                 "Ancient Hydra", "Twins", "Zanatath", "Parvin", "Arturia", "Villard", "Arkham", "Ripper", "Talus"
-            });
+            ]);
         }
     }
 }

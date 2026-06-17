@@ -65,7 +65,7 @@ public abstract class SearchWizardCommandBase : BaseCommandModule
     {
         // Prepare custom bosses list because Discord allows only up to 25 options in dropdown list.
         // Therefore, merge `Broodmother` and `Narith` into a single group.
-        var bossesList = _analysisService.AvailableBosses.Except(new[] { "Broodmother", "Narith" }).ToList();
+        var bossesList = _analysisService.AvailableBosses.Except(["Broodmother", "Narith"]).ToList();
         bossesList.Insert(0, "Broodmother & Narith");
 
         var filters = new List<SearchWizardFilter>

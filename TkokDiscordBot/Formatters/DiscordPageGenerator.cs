@@ -16,17 +16,17 @@ public class DiscordPageGenerator
     public const int MaxPageContentLength = 2000;
 
     private static string[] SearchTooltips { get; } =
-    {
+    [
         " *Tip: Command sender can use emotes to see next pages.*",
         " *Tip: Use* `!search-wizard` *(or* `!sw`*) command for better searching experience.*",
         " *Tip: Interactive pagination is automatically disabled in 5 minutes.*",
         " *Tip: You can search items by type, slot, level, quality, boss. Use* `!search-guide` *to find out how.*",
         " *Tip: Use* `!explore` *to find out more about the items and their properties.*",
         " *Tip: Use* `!<item name>` *to get more info about specific item.*",
-        " *Tip: Use* `!<item name> +15` *to get stats of lvl 15 reforged item.*",
-    };
+        " *Tip: Use* `!<item name> +15` *to get stats of lvl 15 reforged item.*"
+    ];
 
-    private static string[] ColumnNames { get; } = { "Name", "Type", "Slot", "Quality", "Lv", "Source" };
+    private static string[] ColumnNames { get; } = ["Name", "Type", "Slot", "Quality", "Lv", "Source"];
 
     public IReadOnlyCollection<Page> ToPages(IReadOnlyCollection<Item> items, string header = null)
     {

@@ -47,7 +47,7 @@ public class FullTextSearchService : IFullTextSearchService, IDisposable
             });
 
         _parser = new MultiFieldQueryParser(AppLuceneVersion,
-            new[] { "id", "name", "slot", "type", "quality", "source", "level", "class", "description", "special" },
+            ["id", "name", "slot", "type", "quality", "source", "level", "class", "description", "special"],
             _analyzer);
 
         var indexConfig = new IndexWriterConfig(AppLuceneVersion, _analyzer);
@@ -81,12 +81,12 @@ public class FullTextSearchService : IFullTextSearchService, IDisposable
         var docIds = hits.Select(h => int.Parse(searcher.Doc(h.Doc).Get("id"))).ToList();
         if (!docIds.Any())
         {
-            return Array.Empty<Item>();
+            return [];
         }
 
         return items.Where(i => docIds.Contains(i.Id)).ToList();
     }
-    
+
     public void Dispose()
     {
         Dispose(true);

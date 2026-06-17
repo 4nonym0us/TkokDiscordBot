@@ -11,8 +11,6 @@ namespace TkokDiscordBot.Entities;
 /// </summary>
 public class Item : ICloneable
 {
-    private short _reforgeLevel;
-
     public int Id { get; set; }
 
     public string Name { get; set; }
@@ -41,10 +39,10 @@ public class Item : ICloneable
 
     public short ReforgeLevel
     {
-        get => _reforgeLevel;
+        get;
         set
         {
-            _reforgeLevel = value;
+            field = value;
             ReforgingHelper.ReforgeProperties(this, value);
         }
     }

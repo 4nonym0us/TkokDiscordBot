@@ -16,24 +16,24 @@ public static class TkokClassHelper
     {
         ItemTypesByClassDict = new Dictionary<TkokClass, string[]>
         {
-            { TkokClass.Arcanist, new[] { "Mithril", "Cloth", "Staff", "Book", "Wand", "Orb" } },
-            { TkokClass.Hydromancer, new[] { "Mithril", "Cloth", "Staff", "Book", "Wand", "Orb" } },
-            { TkokClass.Pyromancer, new[] { "Mithril", "Cloth", "Staff", "Book", "Wand", "Orb" } },
-            { TkokClass.Aeromancer, new[] { "Mithril", "Cloth", "Staff", "Book", "Wand", "Orb" } },
-            { TkokClass.Cleric, new[] { "Mithril", "Cloth", "Staff", "Book", "Wand", "Orb" } },
-            { TkokClass.Warrior, new[] { "Mithril", "Mail", "Sword", "Axe", "Mace", "Shield", "Dual Dagger", "Dual Axe" } },
-            { TkokClass.ChaoticKnight, new[] { "Mithril", "Mail", "Sword", "Axe", "Shield", "Dual Axe" } },
-            { TkokClass.Shadowblade, new[] { "Mithril", "Leather", "Dagger", "Sword", "Dual Dagger" } },
-            { TkokClass.Medicaster, new[] { "Mithril", "Leather", "Cloth", "Staff", "Axe", "Mace", "Idol", "Book" } },
-            { TkokClass.Venomancer, new[] { "Mithril", "Leather", "Dagger", "Dual Dagger", "Wand", "Orb" } },
-            { TkokClass.PhantomStalker, new[] { "Mithril", "Leather", "Dagger", "Dual Dagger" } },
-            { TkokClass.Chronowarper, new[] { "Mithril", "Cloth", "Mail", "Sword", "Axe", "Mace", "Dual Dagger", "Dual Axe", "Wand", "Orb" } },
-            { TkokClass.Barbarian, new[] { "Mithril", "Mail", "Leather", "Axe", "Dual Axe" } },
-            { TkokClass.Paladin, new[] { "Mithril", "Mail", "Mace", "Book" } },
-            { TkokClass.Ranger, new[] { "Mithril", "Leather", "Bow", "Quiver", "Dual Dagger" } },
-            { TkokClass.Druid, new[] { "Mithril", "Leather", "Staff", "Idol" } },
-            { TkokClass.Earthquaker, new[] { "Mithril", "Mail", "Axe", "Dual Axe", "Idol" } },
-            { TkokClass.ShadowShaman, new[] { "Mithril", "Cloth", "Staff", "Idol", "Wand", "Orb" } }
+            { TkokClass.Arcanist, ["Mithril", "Cloth", "Staff", "Book", "Wand", "Orb"] },
+            { TkokClass.Hydromancer, ["Mithril", "Cloth", "Staff", "Book", "Wand", "Orb"] },
+            { TkokClass.Pyromancer, ["Mithril", "Cloth", "Staff", "Book", "Wand", "Orb"] },
+            { TkokClass.Aeromancer, ["Mithril", "Cloth", "Staff", "Book", "Wand", "Orb"] },
+            { TkokClass.Cleric, ["Mithril", "Cloth", "Staff", "Book", "Wand", "Orb"] },
+            { TkokClass.Warrior, ["Mithril", "Mail", "Sword", "Axe", "Mace", "Shield", "Dual Dagger", "Dual Axe"] },
+            { TkokClass.ChaoticKnight, ["Mithril", "Mail", "Sword", "Axe", "Shield", "Dual Axe"] },
+            { TkokClass.Shadowblade, ["Mithril", "Leather", "Dagger", "Sword", "Dual Dagger"] },
+            { TkokClass.Medicaster, ["Mithril", "Leather", "Cloth", "Staff", "Axe", "Mace", "Idol", "Book"] },
+            { TkokClass.Venomancer, ["Mithril", "Leather", "Dagger", "Dual Dagger", "Wand", "Orb"] },
+            { TkokClass.PhantomStalker, ["Mithril", "Leather", "Dagger", "Dual Dagger"] },
+            { TkokClass.Chronowarper, ["Mithril", "Cloth", "Mail", "Sword", "Axe", "Mace", "Dual Dagger", "Dual Axe", "Wand", "Orb"] },
+            { TkokClass.Barbarian, ["Mithril", "Mail", "Leather", "Axe", "Dual Axe"] },
+            { TkokClass.Paladin, ["Mithril", "Mail", "Mace", "Book"] },
+            { TkokClass.Ranger, ["Mithril", "Leather", "Bow", "Quiver", "Dual Dagger"] },
+            { TkokClass.Druid, ["Mithril", "Leather", "Staff", "Idol"] },
+            { TkokClass.Earthquaker, ["Mithril", "Mail", "Axe", "Dual Axe", "Idol"] },
+            { TkokClass.ShadowShaman, ["Mithril", "Cloth", "Staff", "Idol", "Wand", "Orb"] }
         };
 
         HumanFriendlyNamesDict = Enum.GetValues<TkokClass>().ToDictionary(c => c, c => c.ToString().ToTitleCase());
