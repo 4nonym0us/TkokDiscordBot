@@ -1,8 +1,9 @@
-﻿using System.Threading.Tasks;
-using DSharpPlus;
+﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using JetBrains.Annotations;
+using System.Globalization;
+using System.Threading.Tasks;
 using TkokDiscordBot.Configuration;
 using TkokDiscordBot.Data.Abstractions;
 
@@ -32,15 +33,42 @@ public class AdministrationCommands : BaseCommandModule
             return;
         }
 
-        var configProperty = _settings.GetType().GetProperty(key);
-        if (configProperty == null)
+        if (_settings is Settings settings)
         {
-            await context.Message.RespondAsync($"Invalid key `{key}`.");
-            return;
+            switch (key.ToLower())
+            {
+                case nameof(ISettings.DiscordToken):
+                    settings.DiscordToken = value;
+                    break;
+                case nameof(ISettings.BotCommandsChannelId):
+                    if (ulong.TryParse(value, NumberStyles.None, CultureInfo.InvariantCulture, out var botCommandsChannelId))
+                    {
+                        settings.BotCommandsChannelId = botCommandsChannelId;
+                    }
+                    else
+                    {
+                        await context.Message.RespondAsync($"Failed to parse value `{value}`.");
+                        return;
+                    }
+                    break;
+                case nameof(ISettings.MainServerId):
+                    if (ulong.TryParse(value, NumberStyles.None, CultureInfo.InvariantCulture, out var mainServerId))
+                    {
+                        settings.MainServerId = mainServerId;
+                    }
+                    else
+                    {
+                        await context.Message.RespondAsync($"Failed to parse value `{value}`.");
+                        return;
+                    }
+                    break;
+                default:
+                    await context.Message.RespondAsync($"Invalid key `{key}`.");
+                    break;
+            }
         }
 
-        configProperty.SetValue(_settings, value, null);
-        await context.Message.RespondAsync($"Successfully set `{configProperty.Name}`=`{value}`.");
+        await context.Message.RespondAsync($"Successfully set `{key}`=`{value}` (value is reset on app restart; update config file to make permanent changes).");
     }
 
     [Command("sync-items")]

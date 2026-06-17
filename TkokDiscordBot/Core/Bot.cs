@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Exceptions;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
@@ -15,7 +16,6 @@ using Microsoft.Extensions.Logging;
 using TkokDiscordBot.Configuration;
 using TkokDiscordBot.Core.Commands.Abstractions;
 using TkokDiscordBot.Core.CommandsNext;
-using TkokDiscordBot.Extensions;
 
 namespace TkokDiscordBot.Core;
 
@@ -25,12 +25,14 @@ public class Bot : IDisposable
     private readonly IReadOnlyList<IHasCommandUsage> _commandUsages;
     private readonly ISettings _settings;
 
+    public const char CommandPrefix = '!';
+
     public DiscordClient Client { get; private set; }
 
     public Bot(IEnumerable<IBotCommand> commands, IEnumerable<IHasCommandUsage> commandsUsageList,
         ISettings settings, IServiceProvider serviceProvider)
     {
-        _botCommands = commands.OrderBy(c => c.GetCommandPriority()).ToList();
+        _botCommands = commands.OrderBy(c => c.Priority).ToList();
         _commandUsages = commandsUsageList.OrderBy(ci => ci.GetUsage().Order).ToList();
         _settings = settings;
 
@@ -66,7 +68,7 @@ public class Bot : IDisposable
     {
         var config = new CommandsNextConfiguration
         {
-            StringPrefixes = new[] { "!" },
+            StringPrefixes = [new string(CommandPrefix, 1)],
             Services = services,
             EnableDefaultHelp = false,
             IgnoreExtraArguments = true
@@ -84,7 +86,6 @@ public class Bot : IDisposable
         Client.UseInteractivity(new InteractivityConfiguration
         {
             PaginationBehaviour = PaginationBehaviour.WrapAround,
-            AckPaginationButtons = true,
             Timeout = TimeSpan.FromMinutes(5),
             ButtonBehavior = ButtonPaginationBehavior.Disable
         });
@@ -107,7 +108,12 @@ public class Bot : IDisposable
 
     private Task OnCommandErrored(CommandsNextExtension commandsNext, CommandErrorEventArgs args)
     {
-        commandsNext.Client.Logger.LogError($"An exception occurred while handling command: {args.Exception.Message}.");
+        if (args.Exception is CommandNotFoundException)
+        {
+            return Task.CompletedTask;
+        }
+
+        commandsNext.Client.Logger.LogError($"An exception occurred while handling command: {args.Exception.Message}");
         return Task.CompletedTask;
     }
 
@@ -125,7 +131,7 @@ public class Bot : IDisposable
 
     private async Task OnReady(DiscordClient client, ReadyEventArgs e)
     {
-        client.Logger.LogInformation("Ready! Setting status message..");
+        client.Logger.LogInformation("Ready! Setting status message...");
 
         await client.UpdateStatusAsync(new DiscordActivity("Creating SkyNet"));
     }
@@ -133,7 +139,7 @@ public class Bot : IDisposable
     private async Task OnMessageCreated(DiscordClient client, MessageCreateEventArgs args)
     {
         // Bot shouldn't handle commands of other bots or itself
-        if (args.Author.IsBot || args.Handled)
+        if (args.Author.IsBot)
         {
             return;
         }
@@ -161,7 +167,6 @@ public class Bot : IDisposable
 
             if (handled)
             {
-                args.Handled = true;
                 client.Logger.LogInformation($"Command {args.Author.Username}:'{args.Message.Content}' was handled by {command.GetType().Name}");
                 break; // Ensure that we don't handle the same message with multiple commands
             }

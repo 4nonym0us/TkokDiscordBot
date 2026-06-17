@@ -4,7 +4,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Castle.Core.Internal;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
@@ -120,11 +119,11 @@ public abstract class SearchWizardCommandBase : BaseCommandModule
         }
 
         // Build the query
-        var queryGroups = filters.Where(f => !f.SelectedOptions.IsNullOrEmpty())
+        var queryGroups = filters.Where(f => f.SelectedOptions.Count > 0)
             .Select(f => f.BuildSearchTerm())
             .ToList();
 
-        if (queryGroups.IsNullOrEmpty())
+        if (queryGroups.Count == 0)
         {
             await context.RespondAsync($" {DiscordServerEmojis.Think} You need to select at least one filter.");
             return null;

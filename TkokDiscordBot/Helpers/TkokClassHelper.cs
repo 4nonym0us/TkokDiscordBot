@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Castle.Core.Internal;
 using TkokDiscordBot.Entities;
 using TkokDiscordBot.Enums;
 using TkokDiscordBot.Extensions;

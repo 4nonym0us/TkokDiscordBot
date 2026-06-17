@@ -9,6 +9,7 @@ using TkokDiscordBot.Configuration;
 using TkokDiscordBot.Core.Commands.Abstractions;
 using TkokDiscordBot.Core.Commands.Dto;
 using TkokDiscordBot.Data.Abstractions;
+using TkokDiscordBot.Enums;
 
 namespace TkokDiscordBot.Core.Commands;
 
@@ -28,10 +29,12 @@ public class GetItemByNameCommand : IBotCommand
         _settings = settings;
     }
 
+    public CommandPriority Priority => CommandPriority.Medium;
+
     public async Task<bool> HandleAsync(DiscordClient client, MessageCreateEventArgs args)
     {
         var message = args.Message.Content;
-        if (!message.StartsWith("!") || message.Length <= 3)
+        if (!message.StartsWith(Bot.CommandPrefix) || message.Length <= 3)
         {
             return false;
         }
@@ -44,7 +47,7 @@ public class GetItemByNameCommand : IBotCommand
             return true;
         }
 
-        var filter = message.TrimStart('!').Trim();
+        var filter = message.TrimStart(Bot.CommandPrefix).Trim();
 
         //Try to get exact match first , partial match if first lookup fails
         var item =

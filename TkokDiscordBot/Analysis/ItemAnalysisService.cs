@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Castle.Core.Internal;
 using TkokDiscordBot.Data.Abstractions;
 using TkokDiscordBot.Entities;
 using TkokDiscordBot.Enums;
+using TkokDiscordBot.Extensions;
 using TkokDiscordBot.Helpers;
 
 namespace TkokDiscordBot.Analysis;

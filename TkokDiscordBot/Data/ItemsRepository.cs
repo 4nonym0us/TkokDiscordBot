@@ -45,15 +45,15 @@ public class ItemsRepository : IItemsRepository
     public IReadOnlyCollection<Item> Search(string name = null, string slot = null, string type = null,
         string quality = null, int? level = null, string boss = null)
     {
-        var items = _itemsStore.GetAll().AsQueryable();
+        var items = _itemsStore.GetAll();
 
-        return items.AsQueryable()
-            .WhereIf(!string.IsNullOrWhiteSpace(name), item => item.Name.Contains(name, StringComparison.OrdinalIgnoreCase))
-            .WhereIf(!string.IsNullOrWhiteSpace(slot), item => item.Slot.Contains(slot, StringComparison.OrdinalIgnoreCase))
-            .WhereIf(!string.IsNullOrWhiteSpace(type), item => item.Type.Contains(type, StringComparison.OrdinalIgnoreCase))
-            .WhereIf(!string.IsNullOrWhiteSpace(quality), item => item.Quality.Contains(quality, StringComparison.OrdinalIgnoreCase))
-            .WhereIf(!string.IsNullOrWhiteSpace(boss), item => item.ObtainableFrom.Contains(boss, StringComparison.OrdinalIgnoreCase))
-            .WhereIf(level.HasValue, item => item.Level == level.Value)
+        return items
+            .WhereIf(!string.IsNullOrWhiteSpace(name), item => item.Name.Contains(name!, StringComparison.OrdinalIgnoreCase))
+            .WhereIf(!string.IsNullOrWhiteSpace(slot), item => item.Slot.Contains(slot!, StringComparison.OrdinalIgnoreCase))
+            .WhereIf(!string.IsNullOrWhiteSpace(type), item => item.Type.Contains(type!, StringComparison.OrdinalIgnoreCase))
+            .WhereIf(!string.IsNullOrWhiteSpace(quality), item => item.Quality.Contains(quality!, StringComparison.OrdinalIgnoreCase))
+            .WhereIf(!string.IsNullOrWhiteSpace(boss), item => item.ObtainableFrom.Contains(boss!, StringComparison.OrdinalIgnoreCase))
+            .WhereIf(level.HasValue, item => item.Level == level!.Value)
             .ToList();
     }
 }
