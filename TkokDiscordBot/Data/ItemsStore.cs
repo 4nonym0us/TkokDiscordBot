@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using TkokDiscordBot.Data.Abstractions;
@@ -19,10 +20,11 @@ public class ItemsStore : IItemsStore
         ReloadItems();
     }
 
-    public event EventHandler<IReadOnlyCollection<Item>> ItemsReloaded;
+    public event EventHandler<IReadOnlyCollection<Item>>? ItemsReloaded;
 
     public IReadOnlyCollection<Item> GetAll() => _items;
 
+    [MemberNotNull(nameof(_items))]
     public void ReloadItems()
     {
         var items = _itemsLoader.Load();

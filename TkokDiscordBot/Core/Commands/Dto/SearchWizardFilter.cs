@@ -26,7 +26,7 @@ public class SearchWizardFilter
     /// <param name="type">Type of filter.</param>
     /// <param name="labels">List of strings to use as Labels/Values. Values are converted to Lucene terms using <see cref="StringExtensions.AsLuceneTerm"/></param>
     /// <param name="customValuesDict">A dictionary of Lucene terms to use for specific labels.</param>
-    public SearchWizardFilter(SearchWizardInputType type, IEnumerable<string> labels, IReadOnlyDictionary<string, string> customValuesDict = null)
+    public SearchWizardFilter(SearchWizardInputType type, IEnumerable<string> labels, IReadOnlyDictionary<string, string>? customValuesDict = null)
     {
         Id = IdPrefix + type.ToString().ToLower();
         Type = type;
@@ -40,7 +40,7 @@ public class SearchWizardFilter
         }).ToList();
     }
 
-    public string BuildSearchTerm()
+    public string? BuildSearchTerm()
     {
         if (!_selectedOptions.Any())
         {

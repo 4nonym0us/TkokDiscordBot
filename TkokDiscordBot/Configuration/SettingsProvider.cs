@@ -40,13 +40,18 @@ public static class SettingsProvider
             settings.BotCommandsChannelId = botChannelId;
         }
 
+        if (TryGetEnvUlong(nameof(ISettings.HoneypotChannelId), out var honeypotChannelId))
+        {
+            settings.HoneypotChannelId = honeypotChannelId;
+        }
+
         if (TryGetEnvUlong(nameof(ISettings.MainServerId), out var mainServerId))
         {
             settings.MainServerId = mainServerId;
         }
     }
 
-    private static string GetEnv(string key) => Environment.GetEnvironmentVariable(EnvPrefix + key);
+    private static string? GetEnv(string key) => Environment.GetEnvironmentVariable(EnvPrefix + key);
 
     private static bool TryGetEnvUlong(string key, out ulong value)
     {

@@ -18,7 +18,7 @@ public abstract class ItemLoaderBase : IItemsLoader
         var obtainableFrom = string.Empty;
         var i = 0;
         var itemId = 1;
-        Item currentItem = null;
+        Item? currentItem = null;
         while (itemSource.Length > i)
         {
             var currentLine = itemSource[i];
@@ -28,7 +28,7 @@ public abstract class ItemLoaderBase : IItemsLoader
                 var nextLine = itemSource[i + 1];
                 obtainableFrom = Regex.Match(nextLine, "^//(.*)$").Result("$1").Trim();
             }
-            else if (currentLine.StartsWith("\"")) //new item header
+            else if (currentLine.StartsWith('\"')) //new item header
             {
                 var itemRegex = _itemHeaderRegex.Match(currentLine);
                 if (itemRegex.Success)

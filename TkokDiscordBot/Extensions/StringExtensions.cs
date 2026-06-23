@@ -1,10 +1,20 @@
-﻿using Lucene.Net.QueryParsers.Classic;
+﻿using System.Diagnostics.CodeAnalysis;
+using Lucene.Net.QueryParsers.Classic;
 using System.Text.RegularExpressions;
 
 namespace TkokDiscordBot.Extensions;
 
 public static class StringExtensions
 {
+    /// <summary>
+    /// Indicates whether the specified string is <see langword="null" /> or an empty string ("").
+    /// </summary>
+    /// <param name="s"></param>
+    /// <returns>
+    /// <see langword="true" /> if the <paramref name="s" /> parameter is <see langword="null" /> or an empty string (""); otherwise, <see langword="false" />.
+    /// </returns>
+    public static bool IsNullOrEmpty([NotNullWhen(false)] this string? s) => string.IsNullOrEmpty(s);
+
     /// <param name="s"></param>
     extension(string s)
     {
@@ -56,13 +66,5 @@ public static class StringExtensions
         {
             return s[..1].ToLower() + s[1..];
         }
-
-        /// <summary>
-        /// Indicates whether the specified string is <see langword="null" /> or an empty string ("").
-        /// </summary>
-        /// <returns>
-        /// <see langword="true" /> if the <paramref name="s" /> parameter is <see langword="null" /> or an empty string (""); otherwise, <see langword="false" />.
-        /// </returns>
-        public bool IsNullOrEmpty() => string.IsNullOrEmpty(s);
     }
 }

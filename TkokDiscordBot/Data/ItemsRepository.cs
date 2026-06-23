@@ -23,7 +23,7 @@ public class ItemsRepository : IItemsRepository
         return _itemsStore.GetAll();
     }
 
-    public Item Get(string name)
+    public Item? Get(string name)
     {
         var query = _itemsStore.GetAll();
         var reforgedItemMatch = _reforgedItemRegex.Match(name);
@@ -31,7 +31,7 @@ public class ItemsRepository : IItemsRepository
         var itemName = reforgedItemMatch.Success ? reforgedItemMatch.Groups[1].Value : name;
         var item = query.FirstOrDefault(i => i.Name.Equals(itemName, StringComparison.InvariantCultureIgnoreCase));
 
-        if (!reforgedItemMatch.Success)
+        if (!reforgedItemMatch.Success || item == null)
         {
             return item;
         }
@@ -41,17 +41,17 @@ public class ItemsRepository : IItemsRepository
 
         return reforgedItem;
     }
-    
-    public IReadOnlyCollection<Item> Search(string name = null, string slot = null, string type = null,
-        string quality = null, int? level = null, string boss = null)
+
+    public IReadOnlyCollection<Item> Search(string? name = null, string? slot = null, string? type = null,
+        string? quality = null, int? level = null, string? boss = null)
     {
         var items = _itemsStore.GetAll();
 
         return items
             .WhereIf(!string.IsNullOrWhiteSpace(name), item => item.Name.Contains(name!, StringComparison.OrdinalIgnoreCase))
-            .WhereIf(!string.IsNullOrWhiteSpace(slot), item => item.Slot.Contains(slot!, StringComparison.OrdinalIgnoreCase))
+            .WhereIf(!string.IsNullOrWhiteSpace(slot), item => item.Slot != null && item.Slot.Contains(slot!, StringComparison.OrdinalIgnoreCase))
             .WhereIf(!string.IsNullOrWhiteSpace(type), item => item.Type.Contains(type!, StringComparison.OrdinalIgnoreCase))
-            .WhereIf(!string.IsNullOrWhiteSpace(quality), item => item.Quality.Contains(quality!, StringComparison.OrdinalIgnoreCase))
+            .WhereIf(!string.IsNullOrWhiteSpace(quality), item => item.Quality != null && item.Quality.Contains(quality!, StringComparison.OrdinalIgnoreCase))
             .WhereIf(!string.IsNullOrWhiteSpace(boss), item => item.ObtainableFrom.Contains(boss!, StringComparison.OrdinalIgnoreCase))
             .WhereIf(level.HasValue, item => item.Level == level!.Value)
             .ToList();

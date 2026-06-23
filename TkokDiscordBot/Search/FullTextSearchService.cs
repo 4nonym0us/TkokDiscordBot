@@ -24,10 +24,11 @@ public class FullTextSearchService : IFullTextSearchService, IDisposable
     private readonly string _indexPath = Path.Combine(Environment.CurrentDirectory, "items-index");
     private const int MaxResults = 500;
 
-    private PerFieldAnalyzerWrapper _analyzer;
+    private readonly PerFieldAnalyzerWrapper _analyzer;
     private readonly MultiFieldQueryParser _parser;
-    private IndexWriter _writer;
-    private MMapDirectory _dir;
+    private readonly IndexWriter _writer;
+    private readonly MMapDirectory _dir;
+    private bool _disposed;
 
     public const LuceneVersion AppLuceneVersion = LuceneVersion.LUCENE_48;
 
@@ -95,25 +96,18 @@ public class FullTextSearchService : IFullTextSearchService, IDisposable
 
     protected virtual void Dispose(bool disposing)
     {
+        if (_disposed)
+        {
+            return;
+        }
+
         if (disposing)
         {
-            if (_analyzer != null)
-            {
-                _analyzer.Dispose();
-                _analyzer = null;
-            }
-
-            if (_writer != null)
-            {
-                _writer.Dispose();
-                _writer = null;
-            }
-
-            if (_dir != null)
-            {
-                _dir.Dispose();
-                _dir = null;
-            }
+            _writer.Dispose();
+            _analyzer.Dispose();
+            _dir.Dispose();
         }
+
+        _disposed = true;
     }
 }

@@ -31,7 +31,7 @@ public class ItemAnalysisService : IItemAnalysisService
         itemsStore.ItemsReloaded += ItemsStoreOnItemsReloaded;
     }
 
-    private void ItemsStoreOnItemsReloaded(object sender, IReadOnlyCollection<Item> items)
+    private void ItemsStoreOnItemsReloaded(object? sender, IReadOnlyCollection<Item> items)
     {
         RecalculateStats(items);
     }
@@ -48,7 +48,7 @@ public class ItemAnalysisService : IItemAnalysisService
 
         foreach (var item in items)
         {
-            if (!item.Slot.IsNullOrEmpty() && !ItemSlots.Contains(item.Slot))
+            if (!(item.Slot).IsNullOrEmpty() && !ItemSlots.Contains(item.Slot))
                 ItemSlots.Add(item.Slot);
 
             if (!item.Type.IsNullOrEmpty() && !ItemTypes.Contains(item.Type))

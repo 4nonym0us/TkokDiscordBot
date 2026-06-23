@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -24,6 +25,7 @@ public class Bot : IDisposable
     private readonly IReadOnlyList<IBotCommand> _botCommands;
     private readonly IReadOnlyList<IHasCommandUsage> _commandUsages;
     private readonly ISettings _settings;
+    private bool _disposed;
 
     public const char CommandPrefix = '!';
 
@@ -45,6 +47,7 @@ public class Bot : IDisposable
 
     #region DiscordClient/CommandNext/Interactivity Initialization
 
+    [MemberNotNull(nameof(Client))]
     private void InitializeDiscordClient()
     {
         Client = new DiscordClient(new DiscordConfiguration
@@ -125,7 +128,8 @@ public class Bot : IDisposable
 
     private Task OnGuildAvailable(DiscordClient client, GuildCreateEventArgs e)
     {
-        client.Logger.LogInformation($"Guild available: {e.Guild.Name}");
+        var permissionString = (e.Guild.Permissions ?? Permissions.None).ToPermissionString();
+        client.Logger.LogInformation($"Guild available: {e.Guild.Name}, permissions: {permissionString}.");
         return Task.CompletedTask;
     }
 
@@ -152,8 +156,7 @@ public class Bot : IDisposable
             foreach (var command in _commandUsages)
             {
                 var usage = command.GetUsage();
-                if (usage != null)
-                    builder.AddField(usage.Command, usage.Usage);
+                builder.AddField(usage.Command, usage.Usage);
             }
             await args.Message.RespondAsync("List of supported commands", builder);
 
@@ -183,13 +186,22 @@ public class Bot : IDisposable
 
     protected virtual void Dispose(bool disposing)
     {
+        if (_disposed)
+        {
+            return;
+        }
+
         if (disposing)
         {
-            if (Client != null)
-            {
-                Client.Dispose();
-                Client = null;
-            }
+            Client.ComponentInteractionCreated -= OnComponentInteractionCreated;
+            Client.MessageCreated -= OnMessageCreated;
+            Client.GuildAvailable -= OnGuildAvailable;
+            Client.ClientErrored -= OnClientErrored;
+            Client.Ready -= OnReady;
+
+            Client.Dispose();
         }
+
+        _disposed = true;
     }
 }

@@ -5,7 +5,7 @@ using TkokDiscordBot.Enums;
 
 namespace TkokDiscordBot.Core.Commands.Abstractions;
 
-public interface IBotCommand : IHasCommandUsage
+public interface IBotCommand
 {
     CommandPriority Priority { get; }
 

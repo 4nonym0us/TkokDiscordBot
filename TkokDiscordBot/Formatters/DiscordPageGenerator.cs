@@ -28,15 +28,15 @@ public class DiscordPageGenerator
 
     private static string[] ColumnNames { get; } = ["Name", "Type", "Slot", "Quality", "Lv", "Source"];
 
-    public IReadOnlyCollection<Page> ToPages(IReadOnlyCollection<Item> items, string header = null)
+    public static IReadOnlyCollection<Page> ToPages(IReadOnlyCollection<Item> items, string? header = null)
     {
         var colWidthSettings = new int[6];
         foreach (var item in items)
         {
             if (colWidthSettings[0] < item.Name.Length) { colWidthSettings[0] = item.Name.Length; }
             if (colWidthSettings[1] < item.Type.Length) { colWidthSettings[1] = item.Type.Length; }
-            if (colWidthSettings[2] < item.Slot.Length) { colWidthSettings[2] = item.Slot.Length; }
-            if (colWidthSettings[3] < item.Quality.Length) { colWidthSettings[3] = item.Quality.Length; }
+            if (colWidthSettings[2] < item.Slot?.Length) { colWidthSettings[2] = item.Slot.Length; }
+            if (colWidthSettings[3] < item.Quality?.Length) { colWidthSettings[3] = item.Quality.Length; }
             if (colWidthSettings[4] < item.Level.ToString().Length) { colWidthSettings[4] = item.Level.ToString().Length; }
             if (colWidthSettings[5] < item.NormalizedObtainableFrom.Length) { colWidthSettings[5] = item.NormalizedObtainableFrom.Length; }
         }
@@ -49,7 +49,7 @@ public class DiscordPageGenerator
         return GeneratePagedOutput(items, colWidthSettings, header).ToList();
     }
 
-    public IEnumerable<Page> GeneratePagedOutput(IReadOnlyCollection<Item> items, int[] colWidthSettings, string header = null)
+    private static ICollection<Page> GeneratePagedOutput(IReadOnlyCollection<Item> items, int[] colWidthSettings, string? header = null)
     {
         const string verticalLine = " │ ";
         const char horizontalLine = '─';
@@ -98,8 +98,8 @@ public class DiscordPageGenerator
             var tableRowBuilder = new StringBuilder()
                 .Append(item.Name.PadRight(colWidthSettings[0])).Append(verticalLine)
                 .Append(item.Type.PadLeft(colWidthSettings[1])).Append(verticalLine)
-                .Append(item.Slot.PadLeft(colWidthSettings[2])).Append(verticalLine)
-                .Append(item.Quality.PadLeft(colWidthSettings[3])).Append(verticalLine)
+                .Append(item.Slot?.PadLeft(colWidthSettings[2])).Append(verticalLine)
+                .Append(item.Quality?.PadLeft(colWidthSettings[3])).Append(verticalLine)
                 .Append(item.Level.ToString().PadLeft(colWidthSettings[4])).Append(verticalLine)
                 .Append(item.NormalizedObtainableFrom.PadLeft(colWidthSettings[5]));
 

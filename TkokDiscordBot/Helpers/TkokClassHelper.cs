@@ -57,7 +57,7 @@ public static class TkokClassHelper
     {
         if (Enum.TryParse(typeof(TkokClass), className, true, out var c))
         {
-            tkokClass = (TkokClass)c!;
+            tkokClass = (TkokClass)c;
             return true;
         }
 

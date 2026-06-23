@@ -1,19 +1,21 @@
-﻿namespace TkokDiscordBot.Core.Commands.Dto;
+﻿using System.Text;
+
+namespace TkokDiscordBot.Core.Commands.Dto;
 
 public class CommandInfo
 {
     /// <summary>
     /// Command name and aliases.
     /// </summary>
-    public string Command { get; set; }
+    public required string Command { get; init; }
 
     /// <summary>
     /// Command usage.
     /// </summary>
-    public string Usage { get; set; }
+    public required string Usage { get; init; }
 
     /// <summary>
     /// Priority of the command in the `help` output.
     /// </summary>
-    public int Order { get; set; }
+    public int Order { get; init; }
 }

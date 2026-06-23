@@ -25,7 +25,6 @@ public abstract class SearchWizardCommandBase : BaseCommandModule
 
     private readonly IItemAnalysisService _analysisService;
     private readonly IFullTextSearchService _fullTextSearch;
-    private readonly DiscordPageGenerator _pageGenerator = new();
 
     protected SearchWizardCommandBase(IItemAnalysisService analysisService, IFullTextSearchService fullTextSearch)
     {
@@ -61,7 +60,7 @@ public abstract class SearchWizardCommandBase : BaseCommandModule
     /// </summary>
     /// <param name="context"></param>
     /// <returns>Lucene-compatible search query or null (if user didn't submit the criteria and command has timed out).</returns>
-    protected async Task<string> RunSearchWizardAsync(CommandContext context)
+    protected async Task<string?> RunSearchWizardAsync(CommandContext context)
     {
         // Prepare custom bosses list because Discord allows only up to 25 options in dropdown list.
         // Therefore, merge `Broodmother` and `Narith` into a single group.
@@ -121,6 +120,7 @@ public abstract class SearchWizardCommandBase : BaseCommandModule
         // Build the query
         var queryGroups = filters.Where(f => f.SelectedOptions.Count > 0)
             .Select(f => f.BuildSearchTerm())
+            .Where(term => term != null)
             .ToList();
 
         if (queryGroups.Count == 0)
@@ -178,7 +178,7 @@ public abstract class SearchWizardCommandBase : BaseCommandModule
             headerBuilder.Append($" Query: `{query}`.");
         }
 
-        var messagePages = _pageGenerator.ToPages(items, headerBuilder.ToString());
+        var messagePages = DiscordPageGenerator.ToPages(items, headerBuilder.ToString());
         if (messagePages.Count > 1)
         {
             var interactivity = context.Client.GetInteractivity();

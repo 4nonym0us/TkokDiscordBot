@@ -18,7 +18,7 @@ namespace TkokDiscordBot.Core.Commands;
 /// Example command: `!Recondite Ring`.
 /// </summary>
 [UsedImplicitly]
-public class GetItemByNameCommand : IBotCommand
+public class GetItemByNameCommand : IBotCommand, IHasCommandUsage
 {
     private readonly IItemsRepository _repository;
     private readonly ISettings _settings;
