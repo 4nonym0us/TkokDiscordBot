@@ -26,6 +26,7 @@ namespace TkokDiscordBot.Dependency;
 [Singleton(typeof(ISettings), Factory = nameof(SettingsFactory))]
 [Transient(typeof(IBotCommand), typeof(GetItemByNameCommand))]
 [Transient(typeof(IBotCommand), typeof(HoneypotCommand))]
+[Transient(typeof(IBotCommand), typeof(SpamBotDetectionCommand))]
 [Transient(typeof(IHasCommandUsage), typeof(GetItemByNameCommand))]
 [Transient(typeof(IHasCommandUsage), typeof(ExploreCommand))]
 [Transient(typeof(IHasCommandUsage), typeof(SearchCommand))]
